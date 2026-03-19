@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Variables personnalisées SkillHub */
+:root {
+  --sh-bleu: #3b4fd8;
+  --sh-bleu-fonce: #2c3db8;
+  --sh-vert: #22c97a;
+  --sh-jaune: #d4aa1e;
+  --sh-rouge: #e05555;
+}
