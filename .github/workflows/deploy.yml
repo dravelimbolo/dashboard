@@ -1,0 +1,247 @@
+# ═══════════════════════════════════════════════════════════════
+# PIPELINE CI/CD — SkillHub JSX + TSX → GitHub Pages
+# ═══════════════════════════════════════════════════════════════
+#
+# Ce fichier définit le pipeline automatique.
+# À chaque push sur la branche "main", GitHub Actions :
+#   1. Installe les dépendances des deux projets
+#   2. Lance les builds Vite (JSX et TSX en parallèle)
+#   3. Assemble les deux dossiers dist + les cours HTML
+#   4. Déploie tout sur GitHub Pages
+#
+# URL finale :
+#   https://dravelimbolo.github.io/dashboard/
+#   https://dravelimbolo.github.io/dashboard/jsx/
+#   https://dravelimbolo.github.io/dashboard/tsx/
+#   https://dravelimbolo.github.io/dashboard/cours/
+# ═══════════════════════════════════════════════════════════════
+
+name: Deploy SkillHub to GitHub Pages
+
+# ── DÉCLENCHEUR ──────────────────────────────────────────────
+# Ce pipeline se déclenche automatiquement sur :
+#   - push sur la branche "main"
+#   - ou manuellement via l'onglet "Actions" sur GitHub
+on:
+  push:
+    branches:
+      - main            # déclenche à chaque merge sur main
+  workflow_dispatch:    # permet de lancer manuellement
+
+# ── PERMISSIONS ───────────────────────────────────────────────
+# GitHub Actions a besoin d'écrire sur GitHub Pages.
+# "contents: read" → lire le code du repo
+# "pages: write"   → déployer sur GitHub Pages
+# "id-token: write"→ authentification OIDC pour le déploiement
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# ── CONCURRENCE ───────────────────────────────────────────────
+# Si deux pipelines se lancent en même temps, on garde seulement
+# le dernier. "cancel-in-progress: false" évite d'annuler un
+# déploiement déjà en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+# ══════════════════════════════════════════════════════════════
+# JOBS : les étapes du pipeline
+# ══════════════════════════════════════════════════════════════
+jobs:
+
+  # ── JOB 1 : BUILD JSX ──────────────────────────────────────
+  build-jsx:
+    name: Build SkillHub JSX (Bootstrap)
+    runs-on: ubuntu-latest   # machine virtuelle GitHub (Ubuntu)
+
+    steps:
+      # Étape 1 : récupérer le code du repo
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # Étape 2 : configurer Node.js
+      # On utilise Node 20 LTS (Long Term Support = version stable)
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: npm → si package-lock.json n'a pas changé,
+          # GitHub réutilise le cache des node_modules.
+          # Gain de temps : ~30 secondes par run.
+          cache: 'npm'
+          cache-dependency-path: skillhub-jsx/package-lock.json
+
+      # Étape 3 : installer les dépendances
+      # "--prefix skillhub-jsx" = exécuter npm dans ce sous-dossier
+      # "ci" au lieu de "install" = installation reproductible
+      #       (respecte exactement le package-lock.json)
+      - name: Installer les dépendances JSX
+        run: npm ci --prefix skillhub-jsx
+
+      # Étape 4 : builder le projet
+      # Vite compile le JSX → HTML + JS + CSS optimisés
+      # Le résultat va dans skillhub-jsx/dist/
+      - name: Build JSX
+        run: npm run build --prefix skillhub-jsx
+
+      # Étape 5 : sauvegarder le résultat du build
+      # "upload-artifact" partage les fichiers entre les jobs.
+      # Le job "deploy" (ci-dessous) les récupérera.
+      - name: Sauvegarder le build JSX
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-jsx
+          path: skillhub-jsx/dist/
+          retention-days: 1   # on garde l'artifact 1 jour seulement
+
+  # ── JOB 2 : BUILD TSX ──────────────────────────────────────
+  build-tsx:
+    name: Build SkillHub TSX (Tailwind)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: skillhub-tsx/package-lock.json
+
+      - name: Installer les dépendances TSX
+        run: npm ci --prefix skillhub-tsx
+
+      - name: Build TSX
+        run: npm run build --prefix skillhub-tsx
+
+      - name: Sauvegarder le build TSX
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-tsx
+          path: skillhub-tsx/dist/
+          retention-days: 1
+
+  # ── JOB 3 : ASSEMBLAGE + DÉPLOIEMENT ──────────────────────
+  # Ce job attend que build-jsx ET build-tsx soient terminés.
+  # "needs" crée une dépendance entre les jobs.
+  deploy:
+    name: Assembler et déployer sur GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [build-jsx, build-tsx]   # attend les 2 builds
+
+    # Environment : lien avec le système GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout du code (pour les cours HTML)
+        uses: actions/checkout@v4
+
+      # Configurer GitHub Pages (nécessaire pour le déploiement OIDC)
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Récupérer les builds sauvegardés par les jobs précédents
+      - name: Récupérer le build JSX
+        uses: actions/download-artifact@v4
+        with:
+          name: build-jsx
+          path: /tmp/build-jsx/     # on télécharge dans /tmp
+
+      - name: Récupérer le build TSX
+        uses: actions/download-artifact@v4
+        with:
+          name: build-tsx
+          path: /tmp/build-tsx/
+
+      # Assembler la structure finale du site
+      # /tmp/site/           → racine du site GitHub Pages
+      # /tmp/site/jsx/       → SkillHub Bootstrap
+      # /tmp/site/tsx/       → SkillHub Tailwind
+      # /tmp/site/cours/     → cours HTML
+      - name: Assembler le site
+        run: |
+          mkdir -p /tmp/site/jsx /tmp/site/tsx /tmp/site/cours
+
+          # Copier les builds dans leurs sous-dossiers
+          cp -r /tmp/build-jsx/. /tmp/site/jsx/
+          cp -r /tmp/build-tsx/. /tmp/site/tsx/
+
+          # Copier les cours HTML
+          cp cours/cours-react-partie1.html /tmp/site/cours/
+          cp cours/cours-react-partie2.html /tmp/site/cours/
+
+          # Créer une page d'accueil index.html
+          cat > /tmp/site/index.html << 'HTML'
+          <!DOCTYPE html>
+          <html lang="fr">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>SkillHub — Dravel Imbolo</title>
+            <style>
+              body { font-family: system-ui, sans-serif; background: #0b0c10; color: #ccd6f6;
+                     display: flex; flex-direction: column; align-items: center;
+                     justify-content: center; min-height: 100vh; margin: 0; gap: 2rem; }
+              h1 { font-size: 2.5rem; color: #fff; margin: 0; }
+              h1 span { color: #6e8efb; }
+              .cards { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+              .card { background: #13141a; border: 1px solid #1e2440; border-radius: 12px;
+                      padding: 2rem 2.5rem; text-align: center; text-decoration: none;
+                      color: inherit; transition: border-color .2s; }
+              .card:hover { border-color: #6e8efb; }
+              .card h2 { color: #fff; margin: 0 0 .5rem; font-size: 1.1rem; }
+              .card p  { color: #5a6490; font-size: .85rem; margin: 0; }
+              .tag { display: inline-block; margin-top: .8rem; font-size: .7rem;
+                     padding: .2rem .6rem; border-radius: 999px;
+                     background: rgba(110,142,251,.1); color: #6e8efb;
+                     border: 1px solid rgba(110,142,251,.3); }
+            </style>
+          </head>
+          <body>
+            <h1>Skill<span>Hub</span></h1>
+            <p style="color:#5a6490;margin:0">Projet React · Dravel Imbolo · 3iL B3 2025-2026</p>
+            <div class="cards">
+              <a class="card" href="jsx/">
+                <h2>SkillHub JSX</h2>
+                <p>React + Bootstrap 5</p>
+                <span class="tag">JSX</span>
+              </a>
+              <a class="card" href="tsx/">
+                <h2>SkillHub TSX</h2>
+                <p>React + TypeScript + Tailwind</p>
+                <span class="tag">TSX</span>
+              </a>
+              <a class="card" href="cours/cours-react-partie1.html">
+                <h2>Cours React — Partie 1</h2>
+                <p>Composants → Context API</p>
+                <span class="tag">HTML</span>
+              </a>
+              <a class="card" href="cours/cours-react-partie2.html">
+                <h2>Cours React — Partie 2</h2>
+                <p>useRef → Architecture</p>
+                <span class="tag">HTML</span>
+              </a>
+            </div>
+          </body>
+          </html>
+          HTML
+
+          echo "=== Structure du site ==="
+          find /tmp/site -type f | sort
+
+      # Packager le dossier site pour GitHub Pages
+      - name: Packager pour GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/site/
+
+      # Déployer sur GitHub Pages
+      - name: Déployer sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

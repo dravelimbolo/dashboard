@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>React — Cours Complet (Partie 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #080b14;
+  --surface:  #0f1322;
+  --surface2: #141829;
+  --border:   #1e2440;
+  --accent:   #6e8efb;
+  --accent2:  #f5c842;
+  --green:    #4ade80;
+  --red:      #f87171;
+  --blue:     #7dd3fc;
+  --purple:   #c084fc;
+  --text:     #ccd6f6;
+  --muted:    #5a6490;
+  --code-bg:  #0c0f1e;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ── HEADER ─────────────────────────────── */
+header {
+  background: linear-gradient(160deg, #0a1035 0%, #080b14 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 2rem 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(110,142,251,.12) 0%, transparent 70%);
+  top: -50px; left: 50%; transform: translateX(-50%);
+  pointer-events: none;
+}
+header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  position: relative;
+  letter-spacing: -.02em;
+}
+header h1 em { color: var(--accent); font-style: normal; }
+header p {
+  color: var(--muted);
+  margin-top: .6rem;
+  font-size: .95rem;
+  position: relative;
+}
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+.badge {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.badge-blue   { color: var(--accent); border-color: rgba(110,142,251,.35); background: rgba(110,142,251,.08); }
+.badge-yellow { color: var(--accent2); border-color: rgba(245,200,66,.3); background: rgba(245,200,66,.07); }
+.badge-green  { color: var(--green); border-color: rgba(74,222,128,.3); background: rgba(74,222,128,.07); }
+
+/* ── SOMMAIRE ───────────────────────────── */
+.toc {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  justify-content: center;
+}
+.toc a {
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: .3rem .65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all .15s;
+}
+.toc a:hover { color: var(--text); border-color: var(--accent); background: rgba(110,142,251,.07); }
+
+/* ── LAYOUT ─────────────────────────────── */
+.wrapper { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+/* ── SECTION ────────────────────────────── */
+.section {
+  margin-top: 5rem;
+  scroll-margin-top: 1.5rem;
+}
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.2rem;
+  margin-bottom: 2rem;
+}
+.section-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .68rem;
+  color: var(--accent);
+  background: rgba(110,142,251,.1);
+  border: 1px solid rgba(110,142,251,.25);
+  padding: .2rem .5rem;
+  border-radius: 5px;
+  white-space: nowrap;
+  margin-top: .35rem;
+}
+.section h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+.section h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 1.8rem 0 .8rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.section h3::before {
+  content: '';
+  width: 3px; height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── BLOCS ──────────────────────────────── */
+.bloc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.2rem;
+}
+p { margin-bottom: .85rem; }
+p:last-child { margin-bottom: 0; }
+strong { color: #fff; font-weight: 600; }
+em { color: var(--accent2); font-style: normal; }
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .82em;
+  background: rgba(110,142,251,.1);
+  color: var(--blue);
+  padding: .1rem .35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(110,142,251,.15);
+}
+
+/* ── SCHÉMAS ASCII ──────────────────────── */
+.schema {
+  background: #060812;
+  border: 1px solid #1a1f38;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 1.2rem 1.5rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+}
+.schema pre {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .79rem;
+  line-height: 1.7;
+  color: #8b9dc3;
+  white-space: pre;
+}
+.schema pre .acc  { color: var(--accent);  font-weight: 600; }
+.schema pre .grn  { color: var(--green); }
+.schema pre .ylw  { color: var(--accent2); }
+.schema pre .blu  { color: var(--blue); }
+.schema pre .red  { color: var(--red); }
+.schema pre .pur  { color: var(--purple); }
+.schema-caption {
+  font-size: .72rem;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: .5rem;
+  padding-left: .2rem;
+}
+
+/* ── CODE BLOC ──────────────────────────── */
+.code-wrap {
+  margin: 1.2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.code-bar {
+  background: #0e1228;
+  padding: .45rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  border-bottom: 1px solid var(--border);
+}
+.code-bar .dots { display: flex; gap: .3rem; }
+.code-bar .dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.code-bar .fname {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+.code-bar .fname em { color: var(--accent2); font-style: normal; }
+pre.code {
+  background: var(--code-bg);
+  padding: 1.3rem 1.5rem;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .8rem;
+  line-height: 1.85;
+  color: #abb2d4;
+}
+/* Syntaxe */
+.kw   { color: #c084fc; }
+.fn   { color: #7dd3fc; }
+.str  { color: #86efac; }
+.num  { color: #fb923c; }
+.cmt  { color: #3a4268; font-style: italic; }
+.tag  { color: #f87171; }
+.prop { color: #fbbf24; }
+.val  { color: #34d399; }
+.typ  { color: #a78bfa; }
+.op   { color: #94a3b8; }
+
+/* ── ALERTES ────────────────────────────── */
+.alerte {
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.1rem 0;
+  display: flex;
+  gap: .8rem;
+  align-items: flex-start;
+  font-size: .875rem;
+}
+.a-info { background: rgba(125,211,252,.06); border: 1px solid rgba(125,211,252,.2); }
+.a-warn { background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.a-ok   { background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2); }
+.a-err  { background: rgba(248,113,113,.06); border: 1px solid rgba(248,113,113,.2); }
+.a-ico  { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+/* ── LISTE ──────────────────────────────── */
+ul { padding-left: 1.4rem; margin-bottom: .9rem; }
+li { margin-bottom: .3rem; }
+li::marker { color: var(--accent); }
+
+/* ── TABLE ──────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .85rem; }
+th {
+  background: var(--surface2);
+  padding: .6rem 1rem;
+  text-align: left;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+td {
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.015); }
+td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--accent2); }
+
+hr.sep { border: none; border-top: 1px solid var(--border); margin: 4rem 0 0; }
+</style>
+<nav class="toc">
+  <a href="#c09">useRef</a>
+  <a href="#c10">useMemo &amp; useCallback</a>
+  <a href="#c11">useReducer</a>
+  <a href="#c12">Hooks personnalisés</a>
+  <a href="#c13">TypeScript TSX</a>
+  <a href="#c14">Formulaires</a>
+  <a href="#c15">Lazy Loading</a>
+  <a href="#c16">Architecture</a>
+</nav>
+<div class="wrapper">
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  09 — useRef                                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c09">
+  <div class="section-head">
+    <span class="section-num">09</span>
+    <h2>useRef — Références DOM</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>useRef</strong> retourne un objet <code>{ current: valeur }</code>. C'est un conteneur persistant que React ne surveille pas. Deux usages principaux :</p>
+    <ul>
+      <li><strong>Référence DOM</strong> : accéder directement à un élément HTML (focus, lecture de dimensions, animations)</li>
+      <li><strong>Valeur sans re-rendu</strong> : stocker une info qui change mais ne doit pas déclencher de re-rendu (id de timer, flag booléen...)</li>
+    </ul>
+  </div>
+
+  <div class="schema">
+<pre>
+  DIFFÉRENCE AVEC useState :
+
+  ┌──────────────────────────────────┬──────────────────────────────────┐
+  │          useState                │           useRef                 │
+  ├──────────────────────────────────┼──────────────────────────────────┤
+  │ Déclenche un re-rendu            │ Ne déclenche AUCUN re-rendu      │
+  │ quand la valeur change           │ quand .current change            │
+  ├──────────────────────────────────┼──────────────────────────────────┤
+  │ La valeur s'affiche dans le JSX  │ La valeur est "en coulisses"     │
+  ├──────────────────────────────────┼──────────────────────────────────┤
+  │ Pour : données UI, compteurs,    │ Pour : références DOM, timers,   │
+  │        formulaires...            │        valeurs de comparaison    │
+  └──────────────────────────────────┴──────────────────────────────────┘
+
+  RÉFÉRENCE DOM :
+
+  const refInput = useRef(null)
+                           │
+  Au premier rendu :       └─ .current = null
+                                         │
+  Après le rendu :                       └─ .current = l'élément &lt;input&gt; du DOM
+
+  &lt;input ref={refInput} /&gt;
+         ↑
+  React connecte automatiquement refInput.current à cet élément
+  après l'avoir inséré dans le DOM.
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>ChampRecherche.jsx</em> — useRef pour focus et DOM</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useRef, useEffect } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">ChampRecherche</span>() {
+
+  <span class="cmt">// useRef(null) crée { current: null }.
+  // null car on n'a pas encore accès à l'élément DOM.
+  // React mettra à jour .current après le premier rendu.</span>
+  <span class="kw">const</span> refInput = <span class="fn">useRef</span>(<span class="val">null</span>)
+
+  <span class="cmt">// Après le montage ([] = une fois), on donne le focus à l'input.
+  // On accède à l'élément via refInput.current
+  // qui pointe maintenant sur le vrai élément &lt;input&gt; du DOM.</span>
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// refInput.current est l'élément &lt;input&gt; HTML.
+    // .focus() est une méthode native du DOM, pas de React.</span>
+    refInput.current.<span class="fn">focus</span>()
+  }, [])
+
+  <span class="kw">const</span> <span class="fn">effacerEtFocaliser</span> = () => {
+    <span class="cmt">// On peut lire et modifier les propriétés DOM directement.
+    // Attention : modifier .value directement bypass le state React.
+    // C'est acceptable ici car c'est une action one-shot.</span>
+    refInput.current.value = <span class="str">''</span>
+    refInput.current.<span class="fn">focus</span>()
+  }
+
+  <span class="kw">const</span> <span class="fn">lireDimensions</span> = () => {
+    <span class="cmt">// getBoundingClientRect() retourne la taille et position
+    // de l'élément dans la page. Impossible sans référence DOM.</span>
+    <span class="kw">const</span> rect = refInput.current.<span class="fn">getBoundingClientRect</span>()
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Largeur de l\'input :'</span>, rect.width)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* On lie la ref à l'élément avec l'attribut "ref". */}</span>
+      <span class="tag">&lt;input</span>
+        <span class="prop">ref</span>={refInput}
+        <span class="prop">type</span>=<span class="str">"text"</span>
+        <span class="prop">placeholder</span>=<span class="str">"Rechercher un atelier..."</span>
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={effacerEtFocaliser}<span class="tag">&gt;</span>Effacer<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  10 — useMemo & useCallback                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c10">
+  <div class="section-head">
+    <span class="section-num">10</span>
+    <h2>useMemo &amp; useCallback — Performance</h2>
+  </div>
+
+  <div class="bloc">
+    <p>À chaque re-rendu, React ré-exécute <em>toute la fonction</em> du composant. Si cette fonction contient un calcul coûteux (filtrer 10 000 éléments) ou crée une fonction qui cause des re-rendus en cascade, ces deux hooks <em>mémorisent</em> le résultat pour éviter le recalcul inutile.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  useMemo — mémorise une VALEUR :
+
+  const total = useMemo(
+    () =&gt; elements.reduce((acc, e) =&gt; acc + e.prix, 0),
+    [elements]          ← recalcule seulement si elements change
+  )
+
+  SANS useMemo : recalcule à CHAQUE re-rendu du composant.
+  AVEC useMemo : recalcule SEULEMENT si [elements] change.
+
+
+  useCallback — mémorise une FONCTION :
+
+  const gererClic = useCallback(
+    (id) =&gt; { sInscrire(id) },
+    [sInscrire]         ← recrée seulement si sInscrire change
+  )
+
+  Pourquoi ? Chaque rendu RECRÉE les fonctions.
+  Si tu passes une fonction recréée à un enfant React.memo,
+  l'enfant re-render inutilement.
+  useCallback évite ça en stabilisant la référence de la fonction.
+
+
+  QUAND LES UTILISER ?
+
+  useMemo    → calculs coûteux (filtres, tris, agrégations sur &gt; 100 éléments)
+  useCallback → fonctions passées en props à des composants React.memo
+  À éviter   → sur tout le reste (la mémorisation coûte aussi de la mémoire)
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>TableauDeBord.jsx</em> — useMemo pour le filtrage</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState, useMemo } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> { utiliserSkillHub } <span class="kw">from</span> <span class="str">'../contextes/ContexteSkillHub'</span>
+<span class="kw">import</span> CarteAtelier <span class="kw">from</span> <span class="str">'../composants/CarteAtelier'</span>
+<span class="kw">import</span> FiltresAteliers <span class="kw">from</span> <span class="str">'../composants/FiltresAteliers'</span>
+
+<span class="cmt">// Valeur initiale des filtres — définie HORS du composant
+// pour éviter qu'elle soit recréée à chaque rendu.</span>
+<span class="kw">const</span> FILTRES_INITIAUX = { recherche: <span class="str">''</span>, categorie: <span class="str">''</span>, niveau: <span class="str">''</span> }
+
+<span class="kw">function</span> <span class="fn">TableauDeBord</span>() {
+  <span class="kw">const</span> { ateliers, utilisateur } = <span class="fn">utiliserSkillHub</span>()
+  <span class="kw">const</span> [filtres, setFiltres] = <span class="fn">useState</span>(FILTRES_INITIAUX)
+
+  <span class="cmt">// Gestionnaire générique pour tous les filtres.
+  // "cle" est le nom du champ : 'recherche', 'categorie', ou 'niveau'.
+  // On copie les filtres actuels (...filtres) et on écrase la clé concernée.</span>
+  <span class="kw">const</span> <span class="fn">mettreAJourFiltre</span> = (cle, valeur) => {
+    <span class="fn">setFiltres</span>(prev => ({ ...prev, [cle]: valeur }))
+  }
+
+  <span class="cmt">// ─── useMemo ──────────────────────────────────────────────────
+  // Sans useMemo : ce filtrage serait recalculé à CHAQUE rendu
+  //               de TableauDeBord, même si ateliers et filtres
+  //               n'ont pas changé (ex: si un parent re-render).
+  //
+  // Avec useMemo : le filtrage ne recalcule QUE SI
+  //               ateliers ou filtres ont réellement changé.
+  //
+  // Syntaxe : useMemo(() =&gt; valeurCalculée, [dépendances])
+  //           La fonction fléchée DOIT retourner la valeur.
+  // ────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> ateliersFiltres = <span class="fn">useMemo</span>(() => {
+    <span class="kw">return</span> ateliers.<span class="fn">filter</span>(a => {
+
+      <span class="cmt">// === '' signifie "filtre vide = pas de filtre appliqué"</span>
+      <span class="kw">const</span> okRecherche = filtres.recherche === <span class="str">''</span>
+        <span class="op">||</span> a.titre.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(filtres.recherche.<span class="fn">toLowerCase</span>())
+        <span class="op">||</span> a.tags.<span class="fn">some</span>(t => t.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(filtres.recherche.<span class="fn">toLowerCase</span>()))
+
+      <span class="kw">const</span> okCategorie = filtres.categorie === <span class="str">''</span>
+        <span class="op">||</span> a.categorie <span class="op">===</span> filtres.categorie
+
+      <span class="kw">const</span> okNiveau = filtres.niveau === <span class="str">''</span>
+        <span class="op">||</span> a.niveau <span class="op">===</span> filtres.niveau
+
+      <span class="cmt">// L'atelier passe le filtre seulement si TOUS les critères sont ok</span>
+      <span class="kw">return</span> okRecherche <span class="op">&amp;&amp;</span> okCategorie <span class="op">&amp;&amp;</span> okNiveau
+    })
+  }, [ateliers, filtres]) <span class="cmt">// ← recalcule si ateliers ou filtres changent</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Bonjour, { utilisateur.nom }<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;FiltresAteliers</span>
+        <span class="prop">filtres</span>={filtres}
+        <span class="prop">surChangement</span>={mettreAJourFiltre}
+        <span class="prop">surReinit</span>={() => <span class="fn">setFiltres</span>(FILTRES_INITIAUX)}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;div</span> <span class="prop">className</span>=<span class="str">"grille"</span><span class="tag">&gt;</span>
+        { ateliersFiltres.<span class="fn">map</span>(a => (
+          <span class="tag">&lt;CarteAtelier</span> <span class="prop">key</span>={a.id} <span class="prop">atelier</span>={a} <span class="tag">/&gt;</span>
+        )) }
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> TableauDeBord
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  11 — useReducer                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c11">
+  <div class="section-head">
+    <span class="section-num">11</span>
+    <h2>useReducer — État complexe</h2>
+  </div>
+
+  <div class="bloc">
+    <p>Quand tu as beaucoup de <code>useState</code> liés entre eux, ou quand les transitions d'état sont complexes (plusieurs cas possibles), <code>useReducer</code> organise tout dans une fonction <em>reducer</em>. Tu ne modifies plus le state directement — tu <em>dispatches des actions</em> qui décrivent "ce qui s'est passé", et le reducer calcule le nouvel état.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  PRINCIPE :
+
+  Action envoyée               État actuel
+  { type: 'INSCRIRE',          { ateliers: [...],
+    id: 'workshop-1' }           utilisateur: {...} }
+         │                              │
+         │                              │
+         └────────────┐ ┌───────────────┘
+                      ↓ ↓
+              ┌───────────────┐
+              │   REDUCER     │  ← fonction PURE (pas d'effets de bord)
+              │               │    switch(action.type) { ... }
+              └───────┬───────┘
+                      │
+                      ↓
+              Nouvel état calculé
+              { ateliers: [...mis à jour],
+                utilisateur: {...mis à jour} }
+
+  DISPATCH = envoyer une action au reducer.
+  React appelle le reducer, récupère le nouvel état,
+  et re-affiche les composants concernés.
+
+
+  QUAND useReducer plutôt que useState ?
+
+  useState : 1-3 valeurs simples et indépendantes
+  useReducer : état avec plusieurs sous-propriétés liées +
+               transitions complexes entre les états +
+               logique qu'on veut isoler et tester
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>gestionPanier.js</em> — reducer et actions</span>
+    </div>
+<pre class="code">
+<span class="cmt">// On définit les noms des actions comme constantes.
+// Avantage : si tu fais une faute de frappe (INSCRRIE au lieu de INSCRIRE),
+// JavaScript lève une erreur plutôt que d'ignorer silencieusement.</span>
+<span class="kw">export const</span> ACTIONS = {
+  INSCRIRE:    <span class="str">'INSCRIRE'</span>,
+  DESINSCRIRE: <span class="str">'DESINSCRIRE'</span>,
+  REINITIALISER: <span class="str">'REINITIALISER'</span>
+}
+
+<span class="cmt">// État initial de l'application</span>
+<span class="kw">export const</span> etatInitial = {
+  ateliers:    [],
+  nbInscrits:  <span class="num">0</span>,
+  chargement:  <span class="val">false</span>
+}
+
+<span class="cmt">// ─── LE REDUCER ──────────────────────────────────────────────
+// Un reducer est une fonction PURE :
+//   • Mêmes entrées → toujours mêmes sorties
+//   • Pas d'appels API, pas de setState, pas de side effects
+//   • NE JAMAIS MODIFIER directement l'état (toujours créer un nouveau)
+//
+// Elle reçoit :
+//   • etat   : l'état ACTUEL
+//   • action : l'objet envoyé par dispatch (toujours { type, ...données })
+//
+// Elle retourne : le NOUVEL état
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">export function</span> <span class="fn">reducteurAteliers</span>(etat, action) {
+  <span class="kw">switch</span> (action.type) {
+
+    <span class="kw">case</span> ACTIONS.INSCRIRE:
+      <span class="kw">return</span> {
+        <span class="cmt">// ...etat : copie TOUT l'état actuel</span>
+        ...etat,
+        <span class="cmt">// On écrase seulement "ateliers" avec la nouvelle version</span>
+        ateliers: etat.ateliers.<span class="fn">map</span>(a =>
+          a.id <span class="op">===</span> action.id
+            ? { ...a, estInscrit: <span class="val">true</span>, currentParticipants: a.currentParticipants <span class="op">+</span> <span class="num">1</span> }
+            : a
+        ),
+        nbInscrits: etat.nbInscrits <span class="op">+</span> <span class="num">1</span>
+      }
+
+    <span class="kw">case</span> ACTIONS.DESINSCRIRE:
+      <span class="kw">return</span> {
+        ...etat,
+        ateliers: etat.ateliers.<span class="fn">map</span>(a =>
+          a.id <span class="op">===</span> action.id
+            ? { ...a, estInscrit: <span class="val">false</span>, currentParticipants: a.currentParticipants <span class="op">-</span> <span class="num">1</span> }
+            : a
+        ),
+        nbInscrits: etat.nbInscrits <span class="op">-</span> <span class="num">1</span>
+      }
+
+    <span class="kw">case</span> ACTIONS.REINITIALISER:
+      <span class="kw">return</span> etatInitial <span class="cmt">// on retourne l'état initial</span>
+
+    <span class="kw">default</span>:
+      <span class="cmt">// TOUJOURS avoir un default qui retourne l'état inchangé.
+      // Si on dispatch une action inconnue, rien ne casse.</span>
+      <span class="kw">return</span> etat
+  }
+}
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>ComposantAvecReducer.jsx</em> — utiliser useReducer</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useReducer } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> { reducteurAteliers, etatInitial, ACTIONS } <span class="kw">from</span> <span class="str">'./gestionPanier'</span>
+
+<span class="kw">function</span> <span class="fn">GestionAteliers</span>() {
+
+  <span class="cmt">// useReducer(reducer, etatInitial) retourne comme useState :
+  //   etat     → l'état actuel (comme "compte" dans useState)
+  //   dispatch → la fonction pour envoyer des actions (comme "setCompte")
+  //
+  // La différence : au lieu de dispatch(nouvelleValeur),
+  //                 on fait dispatch({ type: 'NOM_ACTION', ...données })</span>
+  <span class="kw">const</span> [etat, dispatch] = <span class="fn">useReducer</span>(reducteurAteliers, etatInitial)
+
+  <span class="kw">const</span> <span class="fn">sInscrire</span> = (id) => {
+    <span class="cmt">// dispatch envoie une action au reducer.
+    // Le reducer reçoit { type: 'INSCRIRE', id: '...' }
+    // et calcule le nouvel état.</span>
+    <span class="fn">dispatch</span>({ type: ACTIONS.INSCRIRE, id })
+  }
+
+  <span class="kw">const</span> <span class="fn">seDesinscrire</span> = (id) => {
+    <span class="fn">dispatch</span>({ type: ACTIONS.DESINSCRIRE, id })
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Inscriptions actives : { etat.nbInscrits }<span class="tag">&lt;/p&gt;</span>
+      { etat.ateliers.<span class="fn">map</span>(a => (
+        <span class="tag">&lt;div</span> <span class="prop">key</span>={a.id}<span class="tag">&gt;</span>
+          { a.titre }
+          <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">sInscrire</span>(a.id)}<span class="tag">&gt;</span>S'inscrire<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      )) }
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  12 — HOOKS PERSONNALISÉS                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c12">
+  <div class="section-head">
+    <span class="section-num">12</span>
+    <h2>Hooks personnalisés</h2>
+  </div>
+
+  <div class="bloc">
+    <p>Un <strong>hook personnalisé</strong> est une fonction qui commence par <code>use</code> et qui regroupe des hooks React pour les réutiliser. C'est simplement de l'extraction de code — comme une fonction utilitaire, mais pour de la logique avec hooks.</p>
+    <p><strong>Règle :</strong> tout ce qui commence par <code>use</code> est traité comme un hook par React et soumis aux règles des hooks (pas dans une condition, pas dans une boucle).</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>hooks/utiliserFetch.js</em> — hook de fetch réutilisable</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="cmt">// ─────────────────────────────────────────────────────────────
+// Ce hook regroupe la logique fetch + loading + erreur.
+// Avant il fallait réécrire tout ça dans chaque composant.
+// Maintenant : 1 ligne dans le composant = toute la logique.
+//
+// Il REÇOIT : une URL (string)
+// Il RETOURNE : { donnees, chargement, erreur }
+//               → tout ce dont le composant a besoin
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">utiliserFetch</span>(url) {
+
+  <span class="kw">const</span> [donnees,    setDonnees]    = <span class="fn">useState</span>(<span class="val">null</span>)
+  <span class="kw">const</span> [chargement, setChargement] = <span class="fn">useState</span>(<span class="val">true</span>)
+  <span class="kw">const</span> [erreur,     setErreur]     = <span class="fn">useState</span>(<span class="val">null</span>)
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// Si l'URL n'est pas fournie, on ne fait rien.</span>
+    <span class="kw">if</span> (!url) <span class="kw">return</span>
+
+    <span class="cmt">// On remet le chargement à true à chaque changement d'URL.
+    // Comme ça, si on change l'URL (ex: changer de page),
+    // le spinner s'affiche pendant le nouveau fetch.</span>
+    <span class="fn">setChargement</span>(<span class="val">true</span>)
+    <span class="fn">setErreur</span>(<span class="val">null</span>)
+
+    <span class="kw">const</span> <span class="fn">executer</span> = <span class="kw">async</span> () => {
+      <span class="kw">try</span> {
+        <span class="kw">const</span> rep  = <span class="kw">await</span> <span class="fn">fetch</span>(url)
+        <span class="cmt">// Si le serveur répond avec un code d'erreur (404, 500...),
+        // fetch ne lève pas d'erreur. On doit vérifier manuellement.</span>
+        <span class="kw">if</span> (!rep.ok) <span class="kw">throw new</span> Error(<span class="str">`Erreur HTTP ${rep.status}`</span>)
+        <span class="kw">const</span> data = <span class="kw">await</span> rep.<span class="fn">json</span>()
+        <span class="fn">setDonnees</span>(data)
+      } <span class="kw">catch</span> (e) {
+        <span class="fn">setErreur</span>(e.message)
+      } <span class="kw">finally</span> {
+        <span class="cmt">// "finally" s'exécute TOUJOURS, qu'il y ait une erreur ou non.
+        // On arrête le chargement dans tous les cas.</span>
+        <span class="fn">setChargement</span>(<span class="val">false</span>)
+      }
+    }
+
+    <span class="fn">executer</span>()
+
+  }, [url]) <span class="cmt">// ← se ré-exécute si l'URL change</span>
+
+  <span class="cmt">// On expose seulement ce dont le composant a besoin.
+  // Le composant ne sait pas comment les données sont chargées.
+  // Il sait juste qu'il peut les utiliser.</span>
+  <span class="kw">return</span> { donnees, chargement, erreur }
+}
+
+<span class="kw">export default</span> utiliserFetch
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>PageAteliers.jsx</em> — utiliser le hook en 1 ligne</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> utiliserFetch <span class="kw">from</span> <span class="str">'../hooks/utiliserFetch'</span>
+
+<span class="kw">function</span> <span class="fn">PageAteliers</span>() {
+
+  <span class="cmt">// 1 ligne remplace environ 20 lignes de logique fetch.
+  // Le composant n'a plus à gérer le useState, useEffect, async/await.
+  // Il se concentre sur l'AFFICHAGE, pas sur la récupération des données.</span>
+  <span class="kw">const</span> { donnees: ateliers, chargement, erreur } = <span class="fn">utiliserFetch</span>(<span class="str">'/api/ateliers'</span>)
+  <span class="cmt">//           ↑ on renomme "donnees" en "ateliers" pour plus de clarté</span>
+
+  <span class="kw">if</span> (chargement) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Chargement...<span class="tag">&lt;/p&gt;</span>
+  <span class="kw">if</span> (erreur)     <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Erreur : { erreur }<span class="tag">&lt;/p&gt;</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      { ateliers?.<span class="fn">map</span>(a => (
+        <span class="tag">&lt;li</span> <span class="prop">key</span>={a.id}<span class="tag">&gt;</span>{ a.titre }<span class="tag">&lt;/li&gt;</span>
+      )) }
+    <span class="tag">&lt;/ul&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  13 — TYPESCRIPT                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c13">
+  <div class="section-head">
+    <span class="section-num">13</span>
+    <h2>TypeScript avec React (TSX)</h2>
+  </div>
+
+  <div class="bloc">
+    <p>TypeScript est du JavaScript avec des <em>types</em>. Tu précises ce que chaque variable doit contenir. L'éditeur (VS Code) t'avertit alors si tu te trompes <em>avant même d'exécuter le code</em>.</p>
+    <p>Exemple : sans TypeScript, tu pourrais passer <code>inscrits="vingt"</code> au lieu de <code>inscrits={20}</code> et le bug n'apparaîtrait qu'à l'exécution. Avec TypeScript, l'éditeur souligne l'erreur en rouge immédiatement.</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>types/index.ts</em> — déclarer les interfaces de l'app</span>
+    </div>
+<pre class="code">
+<span class="cmt">// ─── TYPES PRIMITIFS ─────────────────────────────────────────
+// string  → texte
+// number  → nombre (entier ou décimal)
+// boolean → true ou false
+// null    → pas de valeur
+// undefined → pas défini
+// void    → fonction qui ne retourne rien
+// ─────────────────────────────────────────────────────────────</span>
+
+<span class="cmt">// ─── UNION TYPE ──────────────────────────────────────────────
+// "a | b | c" = peut être l'une de ces valeurs ET RIEN D'AUTRE.
+// Si tu essaies d'assigner 'expert', TypeScript lève une erreur.
+// C'est bien plus sûr qu'une simple string sans contrainte. ─────</span>
+<span class="kw">export type</span> <span class="typ">NiveauAtelier</span> = <span class="str">'beginner'</span> | <span class="str">'intermediate'</span> | <span class="str">'advanced'</span>
+<span class="kw">export type</span> <span class="typ">StatutAtelier</span> = <span class="str">'upcoming'</span>   | <span class="str">'ongoing'</span>       | <span class="str">'completed'</span>
+<span class="kw">export type</span> <span class="typ">RoleUtilisateur</span> = <span class="str">'learner'</span> | <span class="str">'instructor'</span>
+
+<span class="cmt">// ─── INTERFACE ───────────────────────────────────────────────
+// Une interface définit la forme exacte d'un objet.
+// Si tu crées un objet Atelier sans "titre" → erreur TypeScript.
+// Si tu ajoutes un champ inconnu → erreur TypeScript.
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">export interface</span> <span class="typ">Instructeur</span> {
+  nom:    <span class="typ">string</span>
+  avatar: <span class="typ">string</span>
+}
+
+<span class="kw">export interface</span> <span class="typ">Atelier</span> {
+  id:                  <span class="typ">string</span>
+  titre:               <span class="typ">string</span>
+  description:         <span class="typ">string</span>
+  date:                <span class="typ">string</span>
+  heure:               <span class="typ">string</span>
+  duree:               <span class="typ">number</span>          <span class="cmt">// en minutes</span>
+  niveau:              <span class="typ">NiveauAtelier</span>   <span class="cmt">// utilise notre union type</span>
+  categorie:           <span class="typ">string</span>
+  instructeur:         <span class="typ">Instructeur</span>     <span class="cmt">// utilise l'interface Instructeur</span>
+  nomImage:            <span class="typ">string</span>
+  maxParticipants:     <span class="typ">number</span>
+  currentParticipants: <span class="typ">number</span>
+  estInscrit<span class="op">?</span>:         <span class="typ">boolean</span>         <span class="cmt">// "?" = optionnel (peut être undefined)</span>
+  statut:              <span class="typ">StatutAtelier</span>
+  tags:                <span class="typ">string</span>[]        <span class="cmt">// tableau de strings</span>
+}
+
+<span class="kw">export interface</span> <span class="typ">Utilisateur</span> {
+  id:               <span class="typ">string</span>
+  nom:              <span class="typ">string</span>
+  email:            <span class="typ">string</span>
+  avatar:           <span class="typ">string</span>
+  role:             <span class="typ">RoleUtilisateur</span>
+  ateliersInscrits: <span class="typ">string</span>[]         <span class="cmt">// tableau d'IDs d'ateliers</span>
+}
+
+<span class="kw">export interface</span> <span class="typ">Filtres</span> {
+  recherche: <span class="typ">string</span>
+  categorie: <span class="typ">string</span>
+  niveau:    <span class="typ">string</span>
+}
+
+<span class="cmt">// Interface pour le contexte : décrit ce que le Provider expose</span>
+<span class="kw">export interface</span> <span class="typ">ContexteSkillHubType</span> {
+  ateliers:     <span class="typ">Atelier</span>[]
+  utilisateur:  <span class="typ">Utilisateur</span>
+  sInscrire:    (id: <span class="typ">string</span>) => <span class="typ">void</span>   <span class="cmt">// fonction qui prend string, retourne rien</span>
+  seDesinscrire:(id: <span class="typ">string</span>) => <span class="typ">void</span>
+}
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>CarteAtelier.tsx</em> — composant typé en TSX</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useNavigate }         <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+<span class="kw">import type</span> { <span class="typ">Atelier</span> }        <span class="kw">from</span> <span class="str">'../types'</span>
+<span class="kw">import</span> { utiliserSkillHub }   <span class="kw">from</span> <span class="str">'../contextes/ContexteSkillHub'</span>
+
+<span class="cmt">// ─── INTERFACE DES PROPS ─────────────────────────────────────
+// On déclare les props attendues dans une interface.
+// TypeScript vérifiera que le parent passe les bonnes props.
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">interface</span> <span class="typ">PropsCarteAtelier</span> {
+  atelier: <span class="typ">Atelier</span>   <span class="cmt">// on réutilise l'interface Atelier déjà définie</span>
+}
+
+<span class="kw">function</span> <span class="fn">CarteAtelier</span>({ atelier }: <span class="typ">PropsCarteAtelier</span>) {
+  <span class="cmt">//                              ↑ on type les paramètres avec l'interface</span>
+
+  <span class="kw">const</span> { sInscrire, seDesinscrire } = <span class="fn">utiliserSkillHub</span>()
+  <span class="kw">const</span> naviguer = <span class="fn">useNavigate</span>()
+
+  <span class="kw">const</span> complet: <span class="typ">boolean</span> = atelier.currentParticipants <span class="op">&gt;=</span> atelier.maxParticipants
+
+  <span class="cmt">// ─── ÉVÉNEMENT TYPÉ ──────────────────────────────────────────
+  // Les événements React sont typés selon l'élément déclencheur :
+  //   React.MouseEvent&lt;HTMLButtonElement&gt; → clic sur un &lt;button&gt;
+  //   React.ChangeEvent&lt;HTMLInputElement&gt; → onChange sur un &lt;input&gt;
+  //   React.FormEvent&lt;HTMLFormElement&gt;    → onSubmit sur un &lt;form&gt;
+  // ─────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererInscription</span> = (e: React.<span class="typ">MouseEvent</span>&lt;<span class="typ">HTMLButtonElement</span>&gt;) => {
+    e.<span class="fn">stopPropagation</span>()
+    <span class="kw">if</span> (atelier.estInscrit) {
+      <span class="fn">seDesinscrire</span>(atelier.id)
+    } <span class="kw">else if</span> (!complet) {
+      <span class="fn">sInscrire</span>(atelier.id)
+    }
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="prop">className</span>=<span class="str">"carte-atelier"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{ atelier.titre }<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{ atelier.description }<span class="tag">&lt;/p&gt;</span>
+
+      <span class="tag">&lt;button</span>
+        <span class="prop">onClick</span>={() => <span class="fn">naviguer</span>(<span class="str">`/ateliers/${atelier.id}`</span>)}
+      <span class="tag">&gt;</span>
+        Voir les détails
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="tag">&lt;button</span>
+        <span class="prop">onClick</span>={gererInscription}
+        <span class="prop">disabled</span>={!atelier.estInscrit <span class="op">&amp;&amp;</span> complet}
+      <span class="tag">&gt;</span>
+        { atelier.estInscrit ? <span class="str">'Inscrit ✓'</span> : complet ? <span class="str">'Complet'</span> : <span class="str">"S'inscrire"</span> }
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> CarteAtelier
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  14 — FORMULAIRES                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c14">
+  <div class="section-head">
+    <span class="section-num">14</span>
+    <h2>Formulaires contrôlés</h2>
+  </div>
+
+  <div class="bloc">
+    <p>Un formulaire est dit <strong>contrôlé</strong> quand React est la source de vérité de ses valeurs. Chaque champ est lié à un state. L'input affiche toujours le state, et quand l'utilisateur tape, on met à jour le state. C'est un cycle bidirectionnel.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  LE CYCLE CONTRÔLÉ :
+
+  Utilisateur tape "R"
+         │
+         ▼
+  onChange(e) déclenché
+         │
+         ▼
+  setState("R")     ← React met à jour le state
+         │
+         ▼
+  React re-rend le composant
+         │
+         ▼
+  &lt;input value="R" /&gt;   ← l'input affiche le state
+
+  INPUT ←──── value={state}    (React contrôle l'affichage)
+  INPUT ─────→ onChange         (l'utilisateur informe React)
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>FormulaireInscription.jsx</em> — formulaire complet avec validation</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">FormulaireInscription</span>() {
+
+  <span class="cmt">// Tous les champs dans un seul objet state.
+  // C'est plus propre que d'avoir un useState par champ.</span>
+  <span class="kw">const</span> [form, setForm] = <span class="fn">useState</span>({
+    nom:        <span class="str">''</span>,
+    email:      <span class="str">''</span>,
+    niveau:     <span class="str">'beginner'</span>,
+    conditions: <span class="val">false</span>       <span class="cmt">// boolean pour la checkbox</span>
+  })
+
+  <span class="cmt">// Object pour stocker les messages d'erreur par champ.
+  // {} = pas d'erreurs au départ.</span>
+  <span class="kw">const</span> [erreurs, setErreurs] = <span class="fn">useState</span>({})
+
+  <span class="cmt">// ─── GESTIONNAIRE UNIVERSEL ──────────────────────────────────
+  // Une seule fonction pour tous les champs.
+  // On utilise e.target.name pour savoir quel champ a changé.
+  // Pour les checkboxes, la valeur est dans e.target.checked
+  // (pas e.target.value qui vaut toujours "on" pour les checkboxes).
+  // ────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererChangement</span> = (e) => {
+    <span class="kw">const</span> { name, value, type, checked } = e.target
+    <span class="fn">setForm</span>(prev => ({
+      ...prev,
+      <span class="cmt">// [name] est une syntaxe de propriété dynamique :
+      // si name = 'email', ça devient { ...prev, email: value }</span>
+      [name]: type <span class="op">===</span> <span class="str">'checkbox'</span> ? checked : value
+    }))
+
+    <span class="cmt">// On efface l'erreur du champ dès que l'utilisateur recommence à taper</span>
+    <span class="kw">if</span> (erreurs[name]) {
+      <span class="fn">setErreurs</span>(prev => ({ ...prev, [name]: <span class="val">undefined</span> }))
+    }
+  }
+
+  <span class="cmt">// ─── VALIDATION ──────────────────────────────────────────────
+  // On retourne un objet d'erreurs. S'il est vide → tout est valide.
+  // S'il contient des clés → certains champs ont des erreurs.</span>
+  <span class="kw">const</span> <span class="fn">valider</span> = () => {
+    <span class="kw">const</span> e = {}
+
+    <span class="kw">if</span> (!form.nom.trim()) {
+      e.nom = <span class="str">'Le nom est requis'</span>
+    }
+    <span class="kw">if</span> (!form.email.<span class="fn">includes</span>(<span class="str">'@'</span>)) {
+      <span class="cmt">// Validation simple. En production, utiliser une regex ou Zod/Yup.</span>
+      e.email = <span class="str">'L\'email doit contenir un @'</span>
+    }
+    <span class="kw">if</span> (!form.conditions) {
+      e.conditions = <span class="str">'Vous devez accepter les conditions'</span>
+    }
+
+    <span class="kw">return</span> e <span class="cmt">// {} si tout est ok, { nom: '...', email: '...' } sinon</span>
+  }
+
+  <span class="kw">const</span> <span class="fn">gererSoumission</span> = (e) => {
+    <span class="cmt">// e.preventDefault() : obligatoire !
+    // Sans ça, le navigateur recharge la page lors du submit.</span>
+    e.<span class="fn">preventDefault</span>()
+
+    <span class="kw">const</span> erreursValidation = <span class="fn">valider</span>()
+
+    <span class="cmt">// Object.keys() retourne un tableau des clés de l'objet.
+    // Si le tableau n'est pas vide, il y a des erreurs.</span>
+    <span class="kw">if</span> (Object.<span class="fn">keys</span>(erreursValidation).length <span class="op">&gt;</span> <span class="num">0</span>) {
+      <span class="fn">setErreurs</span>(erreursValidation)
+      <span class="kw">return</span> <span class="cmt">// on s'arrête ici si des erreurs existent</span>
+    }
+
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Données du formulaire :'</span>, form)
+    <span class="cmt">// Ici on enverrait les données à l'API</span>
+  }
+
+  <span class="kw">return</span> (
+    <span class="cmt">{/* onSubmit sur le &lt;form&gt;, pas sur le button.
+         Ça capture aussi la soumission via touche Entrée. */}</span>
+    <span class="tag">&lt;form</span> <span class="prop">onSubmit</span>={gererSoumission}<span class="tag">&gt;</span>
+
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Nom<span class="tag">&lt;/label&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="prop">name</span>=<span class="str">"nom"</span>               <span class="cmt">{/* name doit correspondre à la clé dans form */}</span>
+          <span class="prop">value</span>={form.nom}        <span class="cmt">{/* React contrôle la valeur affichée */}</span>
+          <span class="prop">onChange</span>={gererChangement}
+          <span class="prop">placeholder</span>=<span class="str">"Votre nom complet"</span>
+        <span class="tag">/&gt;</span>
+        <span class="cmt">{/* Affiche l'erreur seulement si elle existe */}</span>
+        { erreurs.nom <span class="op">&amp;&amp;</span> <span class="tag">&lt;span</span> <span class="prop">className</span>=<span class="str">"erreur"</span><span class="tag">&gt;</span>{ erreurs.nom }<span class="tag">&lt;/span&gt;</span> }
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Email<span class="tag">&lt;/label&gt;</span>
+        <span class="tag">&lt;input</span>
+          <span class="prop">type</span>=<span class="str">"email"</span>
+          <span class="prop">name</span>=<span class="str">"email"</span>
+          <span class="prop">value</span>={form.email}
+          <span class="prop">onChange</span>={gererChangement}
+        <span class="tag">/&gt;</span>
+        { erreurs.email <span class="op">&amp;&amp;</span> <span class="tag">&lt;span</span> <span class="prop">className</span>=<span class="str">"erreur"</span><span class="tag">&gt;</span>{ erreurs.email }<span class="tag">&lt;/span&gt;</span> }
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;label&gt;</span>Niveau<span class="tag">&lt;/label&gt;</span>
+        <span class="cmt">{/* Pour un &lt;select&gt;, value contrôle l'option sélectionnée.
+             onChange fonctionne de la même façon qu'un input. */}</span>
+        <span class="tag">&lt;select</span> <span class="prop">name</span>=<span class="str">"niveau"</span> <span class="prop">value</span>={form.niveau} <span class="prop">onChange</span>={gererChangement}<span class="tag">&gt;</span>
+          <span class="tag">&lt;option</span> <span class="prop">value</span>=<span class="str">"beginner"</span><span class="tag">&gt;</span>Débutant<span class="tag">&lt;/option&gt;</span>
+          <span class="tag">&lt;option</span> <span class="prop">value</span>=<span class="str">"intermediate"</span><span class="tag">&gt;</span>Intermédiaire<span class="tag">&lt;/option&gt;</span>
+          <span class="tag">&lt;option</span> <span class="prop">value</span>=<span class="str">"advanced"</span><span class="tag">&gt;</span>Avancé<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;/select&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;div&gt;</span>
+        <span class="cmt">{/* Pour une checkbox : "checked" au lieu de "value" */}</span>
+        <span class="tag">&lt;input</span>
+          <span class="prop">type</span>=<span class="str">"checkbox"</span>
+          <span class="prop">name</span>=<span class="str">"conditions"</span>
+          <span class="prop">checked</span>={form.conditions}
+          <span class="prop">onChange</span>={gererChangement}
+        <span class="tag">/&gt;</span>
+        <span class="tag">&lt;label&gt;</span>J'accepte les conditions<span class="tag">&lt;/label&gt;</span>
+        { erreurs.conditions <span class="op">&amp;&amp;</span> <span class="tag">&lt;span</span> <span class="prop">className</span>=<span class="str">"erreur"</span><span class="tag">&gt;</span>{ erreurs.conditions }<span class="tag">&lt;/span&gt;</span> }
+      <span class="tag">&lt;/div&gt;</span>
+
+      <span class="tag">&lt;button</span> <span class="prop">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>S'inscrire<span class="tag">&lt;/button&gt;</span>
+
+    <span class="tag">&lt;/form&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  15 — LAZY LOADING                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c15">
+  <div class="section-head">
+    <span class="section-num">15</span>
+    <h2>Lazy Loading &amp; Suspense</h2>
+  </div>
+
+  <div class="bloc">
+    <p>Par défaut, Vite bundle tout le code en un seul fichier JS. Si ton app a 15 pages, le navigateur télécharge le code de toutes les pages au premier chargement. Avec <code>React.lazy</code>, chaque page n'est téléchargée que quand l'utilisateur la visite.</p>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>router.jsx</em> — avec lazy loading sur les pages</span>
+    </div>
+<pre class="code">
+<span class="cmt">// lazy : transforme un import dynamique en composant React.
+// Suspense : affiche un fallback pendant le téléchargement lazy.</span>
+<span class="kw">import</span> { lazy, Suspense }                    <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> { createBrowserRouter, RouterProvider } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+<span class="kw">import</span> AppLayout                              <span class="kw">from</span> <span class="str">'./AppLayout'</span>
+
+<span class="cmt">// ─── IMPORT LAZY ─────────────────────────────────────────────
+// import() (sans le mot "import" au début) est un import DYNAMIQUE.
+// Il retourne une Promise qui se résout quand le fichier est chargé.
+// lazy() accepte cette Promise et crée un composant React.
+//
+// AVANT : import TableauDeBord from './pages/TableauDeBord'
+//         → chargé IMMÉDIATEMENT avec le reste de l'app
+//
+// APRÈS : const TableauDeBord = lazy(() => import('./pages/TableauDeBord'))
+//         → chargé SEULEMENT quand on navigue vers "/"
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">const</span> TableauDeBord   = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./pages/TableauDeBord'</span>))
+<span class="kw">const</span> TousLesAteliers = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./pages/TousLesAteliers'</span>))
+<span class="kw">const</span> DetailAtelier   = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./pages/DetailAtelier'</span>))
+<span class="kw">const</span> MesAteliers     = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./pages/MesAteliers'</span>))
+<span class="kw">const</span> EspaceFormateur = <span class="fn">lazy</span>(() => <span class="kw">import</span>(<span class="str">'./pages/EspaceFormateur'</span>))
+
+<span class="cmt">// Composant de chargement affiché pendant le téléchargement</span>
+<span class="kw">function</span> <span class="fn">PageEnChargement</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="prop">style</span>={{ textAlign: <span class="str">'center'</span>, padding: <span class="str">'4rem'</span> }}<span class="tag">&gt;</span>
+      Chargement de la page...
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// Helper pour ne pas répéter Suspense partout</span>
+<span class="kw">const</span> <span class="fn">avecSuspense</span> = (Composant) => (
+  <span class="tag">&lt;Suspense</span> <span class="prop">fallback</span>={<span class="tag">&lt;PageEnChargement /&gt;</span>}<span class="tag">&gt;</span>
+    <span class="tag">&lt;Composant /&gt;</span>
+  <span class="tag">&lt;/Suspense&gt;</span>
+)
+<span class="cmt">// ↑ fallback : ce qui s'affiche PENDANT le chargement du composant lazy.
+//   Dès que le fichier JS est téléchargé et parsé, le fallback
+//   est remplacé par le vrai composant.</span>
+
+<span class="kw">const</span> routeur = <span class="fn">createBrowserRouter</span>([
+  {
+    path: <span class="str">'/'</span>,
+    element: <span class="tag">&lt;AppLayout /&gt;</span>,
+    children: [
+      { index: <span class="val">true</span>,              element: <span class="fn">avecSuspense</span>(TableauDeBord) },
+      { path: <span class="str">'ateliers'</span>,         element: <span class="fn">avecSuspense</span>(TousLesAteliers) },
+      { path: <span class="str">'ateliers/:id'</span>,     element: <span class="fn">avecSuspense</span>(DetailAtelier) },
+      { path: <span class="str">'mes-ateliers'</span>,     element: <span class="fn">avecSuspense</span>(MesAteliers) },
+      { path: <span class="str">'espace-formateur'</span>, element: <span class="fn">avecSuspense</span>(EspaceFormateur) },
+    ]
+  }
+])
+
+<span class="kw">function</span> <span class="fn">AppRouter</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;RouterProvider</span> <span class="prop">router</span>={routeur} <span class="tag">/&gt;</span>
+}
+
+<span class="kw">export default</span> AppRouter
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  16 — ARCHITECTURE                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c16">
+  <div class="section-head">
+    <span class="section-num">16</span>
+    <h2>Bonnes pratiques &amp; Architecture</h2>
+  </div>
+
+  <div class="schema">
+<pre>
+  STRUCTURE COMPLÈTE D'UNE APP REACT BIEN ORGANISÉE :
+
+  src/
+  │
+  ├── main.jsx              ← Point d'entrée. Crée la racine React,
+  │                           importe les styles globaux, monte AppRouter.
+  │                           Contient les Providers (contextes).
+  │
+  ├── router.jsx            ← TOUTES les routes. createBrowserRouter.
+  │                           Lazy loading des pages. C'est SON seul rôle.
+  │
+  ├── AppLayout.jsx         ← Layout partagé. Navigation + &lt;Outlet /&gt;.
+  │                           S'affiche sur toutes les pages.
+  │
+  ├── types/
+  │   └── index.ts          ← Interfaces et types TypeScript.
+  │                           Un seul endroit pour les modifier.
+  │
+  ├── contextes/
+  │   └── ContexteSkillHub.jsx  ← État global. Provider + hook d'accès.
+  │                               Logique métier (sInscrire, seDesinscrire...).
+  │
+  ├── hooks/                ← Hooks personnalisés réutilisables.
+  │   ├── utiliserFetch.js      Logique extraite des composants.
+  │   └── utiliserLocalStorage.js
+  │
+  ├── composants/           ← Composants réutilisables.
+  │   ├── Navigation.jsx        Un composant = une seule responsabilité.
+  │   ├── CarteAtelier.jsx      Pas de logique métier ici.
+  │   └── FiltresAteliers.jsx
+  │
+  ├── pages/                ← Un fichier = une route.
+  │   ├── TableauDeBord.jsx     Les pages assemblent les composants.
+  │   ├── TousLesAteliers.jsx   Elles ont le droit d'avoir de la logique
+  │   ├── DetailAtelier.jsx     (useState, useMemo...) mais délèguent
+  │   ├── MesAteliers.jsx       l'affichage aux composants.
+  │   └── EspaceFormateur.jsx
+  │
+  └── données/
+      └── mockData.js       ← Données de test. Remplacées par l'API plus tard.
+
+
+  RÈGLES DES HOOKS — absolument obligatoires :
+
+  ✅ Appeler les hooks au niveau supérieur de la fonction
+  ✅ Appeler les hooks seulement dans un composant React
+     ou un hook personnalisé (qui commence par "use")
+
+  ❌ if (condition) { useState() }   → interdit dans une condition
+  ❌ for (let i ...) { useEffect() } → interdit dans une boucle
+  ❌ monBouton.onClick = () => { useRef() } → interdit dans un callback
+
+
+  TABLEAU RÉCAPITULATIF DES HOOKS :
+</pre>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Hook</th>
+        <th>Rôle en une phrase</th>
+        <th>Exemple d'usage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>useState</td>
+        <td>Mémoriser une valeur qui change et met à jour l'écran</td>
+        <td>Compteur, formulaire, toggle menu</td>
+      </tr>
+      <tr>
+        <td>useEffect</td>
+        <td>Déclencher du code après le rendu (fetch, timer, event listener)</td>
+        <td>Charger les données API au montage</td>
+      </tr>
+      <tr>
+        <td>useContext</td>
+        <td>Lire un contexte global sans passer par les props intermédiaires</td>
+        <td>Accéder à l'utilisateur connecté</td>
+      </tr>
+      <tr>
+        <td>useRef</td>
+        <td>Accéder à un élément DOM ou stocker une valeur sans re-rendu</td>
+        <td>Focus sur un input, stocker un timer</td>
+      </tr>
+      <tr>
+        <td>useMemo</td>
+        <td>Mémoriser le résultat d'un calcul coûteux</td>
+        <td>Filtrer/trier une grande liste</td>
+      </tr>
+      <tr>
+        <td>useCallback</td>
+        <td>Mémoriser une fonction pour stabiliser sa référence</td>
+        <td>Fonction passée à un enfant React.memo</td>
+      </tr>
+      <tr>
+        <td>useReducer</td>
+        <td>Gérer un état complexe avec des transitions nommées</td>
+        <td>Panier, formulaire multi-étapes</td>
+      </tr>
+      <tr>
+        <td>useNavigate</td>
+        <td>Naviguer vers une URL par code (pas par un lien)</td>
+        <td>Redirect après soumission de formulaire</td>
+      </tr>
+      <tr>
+        <td>useParams</td>
+        <td>Lire les segments dynamiques de l'URL (:id)</td>
+        <td>Page de détail d'un atelier</td>
+      </tr>
+      <tr>
+        <td>useLocation</td>
+        <td>Lire l'URL actuelle complète (pathname, search, hash)</td>
+        <td>Analytics, breadcrumb dynamique</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+</body>
+</html>

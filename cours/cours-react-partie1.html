@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>React — Cours Complet Ultra-Détaillé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #080b14;
+  --surface:  #0f1322;
+  --surface2: #141829;
+  --border:   #1e2440;
+  --accent:   #6e8efb;
+  --accent2:  #f5c842;
+  --green:    #4ade80;
+  --red:      #f87171;
+  --blue:     #7dd3fc;
+  --purple:   #c084fc;
+  --text:     #ccd6f6;
+  --muted:    #5a6490;
+  --code-bg:  #0c0f1e;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ── HEADER ─────────────────────────────── */
+header {
+  background: linear-gradient(160deg, #0a1035 0%, #080b14 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 2rem 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(110,142,251,.12) 0%, transparent 70%);
+  top: -50px; left: 50%; transform: translateX(-50%);
+  pointer-events: none;
+}
+header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
+  position: relative;
+  letter-spacing: -.02em;
+}
+header h1 em { color: var(--accent); font-style: normal; }
+header p {
+  color: var(--muted);
+  margin-top: .6rem;
+  font-size: .95rem;
+  position: relative;
+}
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+.badge {
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.badge-blue   { color: var(--accent); border-color: rgba(110,142,251,.35); background: rgba(110,142,251,.08); }
+.badge-yellow { color: var(--accent2); border-color: rgba(245,200,66,.3); background: rgba(245,200,66,.07); }
+.badge-green  { color: var(--green); border-color: rgba(74,222,128,.3); background: rgba(74,222,128,.07); }
+
+/* ── SOMMAIRE ───────────────────────────── */
+.toc {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  justify-content: center;
+}
+.toc a {
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: .3rem .65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all .15s;
+}
+.toc a:hover { color: var(--text); border-color: var(--accent); background: rgba(110,142,251,.07); }
+
+/* ── LAYOUT ─────────────────────────────── */
+.wrapper { max-width: 920px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+/* ── SECTION ────────────────────────────── */
+.section {
+  margin-top: 5rem;
+  scroll-margin-top: 1.5rem;
+}
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.2rem;
+  margin-bottom: 2rem;
+}
+.section-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .68rem;
+  color: var(--accent);
+  background: rgba(110,142,251,.1);
+  border: 1px solid rgba(110,142,251,.25);
+  padding: .2rem .5rem;
+  border-radius: 5px;
+  white-space: nowrap;
+  margin-top: .35rem;
+}
+.section h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+.section h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 1.8rem 0 .8rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.section h3::before {
+  content: '';
+  width: 3px; height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── BLOCS ──────────────────────────────── */
+.bloc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.2rem;
+}
+p { margin-bottom: .85rem; }
+p:last-child { margin-bottom: 0; }
+strong { color: #fff; font-weight: 600; }
+em { color: var(--accent2); font-style: normal; }
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .82em;
+  background: rgba(110,142,251,.1);
+  color: var(--blue);
+  padding: .1rem .35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(110,142,251,.15);
+}
+
+/* ── SCHÉMAS ASCII ──────────────────────── */
+.schema {
+  background: #060812;
+  border: 1px solid #1a1f38;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 1.2rem 1.5rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+}
+.schema pre {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .79rem;
+  line-height: 1.7;
+  color: #8b9dc3;
+  white-space: pre;
+}
+.schema pre .acc  { color: var(--accent);  font-weight: 600; }
+.schema pre .grn  { color: var(--green); }
+.schema pre .ylw  { color: var(--accent2); }
+.schema pre .blu  { color: var(--blue); }
+.schema pre .red  { color: var(--red); }
+.schema pre .pur  { color: var(--purple); }
+.schema-caption {
+  font-size: .72rem;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: .5rem;
+  padding-left: .2rem;
+}
+
+/* ── CODE BLOC ──────────────────────────── */
+.code-wrap {
+  margin: 1.2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.code-bar {
+  background: #0e1228;
+  padding: .45rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  border-bottom: 1px solid var(--border);
+}
+.code-bar .dots { display: flex; gap: .3rem; }
+.code-bar .dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+.code-bar .fname {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+.code-bar .fname em { color: var(--accent2); font-style: normal; }
+pre.code {
+  background: var(--code-bg);
+  padding: 1.3rem 1.5rem;
+  overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: .8rem;
+  line-height: 1.85;
+  color: #abb2d4;
+}
+/* Syntaxe */
+.kw   { color: #c084fc; }
+.fn   { color: #7dd3fc; }
+.str  { color: #86efac; }
+.num  { color: #fb923c; }
+.cmt  { color: #3a4268; font-style: italic; }
+.tag  { color: #f87171; }
+.prop { color: #fbbf24; }
+.val  { color: #34d399; }
+.typ  { color: #a78bfa; }
+.op   { color: #94a3b8; }
+
+/* ── ALERTES ────────────────────────────── */
+.alerte {
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.1rem 0;
+  display: flex;
+  gap: .8rem;
+  align-items: flex-start;
+  font-size: .875rem;
+}
+.a-info { background: rgba(125,211,252,.06); border: 1px solid rgba(125,211,252,.2); }
+.a-warn { background: rgba(245,200,66,.06); border: 1px solid rgba(245,200,66,.2); }
+.a-ok   { background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2); }
+.a-err  { background: rgba(248,113,113,.06); border: 1px solid rgba(248,113,113,.2); }
+.a-ico  { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+/* ── LISTE ──────────────────────────────── */
+ul { padding-left: 1.4rem; margin-bottom: .9rem; }
+li { margin-bottom: .3rem; }
+li::marker { color: var(--accent); }
+
+/* ── TABLE ──────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .85rem; }
+th {
+  background: var(--surface2);
+  padding: .6rem 1rem;
+  text-align: left;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+td {
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.015); }
+td:first-child { font-family: 'IBM Plex Mono', monospace; font-size: .78rem; color: var(--accent2); }
+
+hr.sep { border: none; border-top: 1px solid var(--border); margin: 4rem 0 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>React — <em>Cours Complet Ultra-Détaillé</em></h1>
+  <p>Chaque ligne de code expliquée · Schémas ASCII · Pour vrais débutants</p>
+  <div class="badges">
+    <span class="badge badge-blue">Débutant → Intermédiaire</span>
+    <span class="badge badge-yellow">JSX + TSX</span>
+    <span class="badge badge-green">16 concepts</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#c01">Composants</a>
+  <a href="#c02">Props</a>
+  <a href="#c03">useState</a>
+  <a href="#c04">useEffect</a>
+  <a href="#c05">Événements</a>
+  <a href="#c06">Conditionnel &amp; Listes</a>
+  <a href="#c07">Router v6</a>
+  <a href="#c08">Context API</a>
+  <a href="#c09">useRef</a>
+  <a href="#c10">useMemo &amp; useCallback</a>
+  <a href="#c11">useReducer</a>
+  <a href="#c12">Hooks personnalisés</a>
+  <a href="#c13">TypeScript TSX</a>
+  <a href="#c14">Formulaires</a>
+  <a href="#c15">Lazy Loading</a>
+  <a href="#c16">Architecture</a>
+</nav>
+
+<div class="wrapper">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  01 — COMPOSANTS                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c01">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2>Composants Fonctionnels</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Qu'est-ce qu'un composant ?</strong><br>
+    Imagine que tu construis une maison. Tu ne construis pas la maison d'un seul coup — tu assembles des briques, des fenêtres, des portes. En React, c'est exactement pareil : tu découpes ton interface en <em>petits blocs réutilisables</em> qu'on appelle des composants.</p>
+    <p>Un composant React, c'est simplement <strong>une fonction JavaScript qui retourne du JSX</strong>. Le JSX ressemble à du HTML mais c'est du JavaScript déguisé.</p>
+    <p><strong>Pourquoi les composants ?</strong> Parce que si tu as une carte d'atelier à afficher 50 fois, tu l'écris <em>une seule fois</em> et tu la réutilises 50 fois. Si tu veux changer son apparence, tu changes à un seul endroit.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  UNE PAGE = UN ASSEMBLAGE DE COMPOSANTS
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  App.jsx   (composant racine — le point de départ)      │
+  │                                                         │
+  │  ┌──────────────────────────────────────────────────┐   │
+  │  │   &lt;Navigation /&gt;                                  │   │
+  │  └──────────────────────────────────────────────────┘   │
+  │                                                         │
+  │  ┌─────────────────────────────────────────────────┐    │
+  │  │   Page en cours (ex: &lt;TableauDeBord /&gt;)          │    │
+  │  │                                                 │    │
+  │  │  ┌─────────────┐  ┌─────────────┐              │    │
+  │  │  │ &lt;Carte /&gt;    │  │ &lt;Carte /&gt;    │  ...         │    │
+  │  │  │             │  │             │              │    │
+  │  │  │ &lt;Bouton /&gt;  │  │ &lt;Bouton /&gt;  │              │    │
+  │  │  └─────────────┘  └─────────────┘              │    │
+  │  └─────────────────────────────────────────────────┘    │
+  └─────────────────────────────────────────────────────────┘
+
+  Chaque boîte = une fonction JS dans un fichier .jsx séparé
+  Tous ces composants s'emboîtent comme des poupées russes
+</pre>
+  </div>
+
+  <h3>La règle fondamentale : majuscule obligatoire</h3>
+  <div class="bloc">
+    <p>React fait la différence entre une balise HTML native (<code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;button&gt;</code>...) et un composant React grâce à la <em>première lettre</em> :</p>
+    <ul>
+      <li><code>&lt;div&gt;</code> minuscule → HTML standard, le navigateur le connaît</li>
+      <li><code>&lt;Carte&gt;</code> Majuscule → composant React, c'est notre fonction</li>
+    </ul>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>Carte.jsx</em> — un composant complet expliqué ligne par ligne</span>
+    </div>
+<pre class="code">
+<span class="cmt">// ─────────────────────────────────────────────────────────────
+// LIGNE 1 : on importe React si on utilise des hooks (useState,
+//           useEffect...). En React 18, cet import est optionnel
+//           pour le JSX pur, mais on l'ajoute dès qu'on a des hooks.
+// ─────────────────────────────────────────────────────────────</span>
+
+<span class="cmt">// Pour l'instant on n'a pas de hooks, pas d'import nécessaire.</span>
+
+<span class="cmt">// ─────────────────────────────────────────────────────────────
+// "function" : mot-clé JS pour déclarer une fonction.
+// "Carte"    : nom du composant. DOIT commencer par une Majuscule.
+//              Sinon React pense que c'est une balise HTML.
+// "()"        : pas de paramètres pour l'instant (on verra les props).
+// ─────────────────────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">Carte</span>() {
+
+  <span class="cmt">// ──────────────────────────────────────────────────
+  // "return" : ce que le composant affiche à l'écran.
+  //            Tout ce qui est à l'intérieur du return
+  //            devient du HTML dans le navigateur.
+  // ──────────────────────────────────────────────────</span>
+  <span class="kw">return</span> (
+    <span class="cmt">// Les parenthèses () après return permettent d'écrire
+    // du JSX sur plusieurs lignes sans erreur.
+    //
+    // RÈGLE JSX : il ne peut y avoir qu'UN SEUL élément
+    // racine. Ici c'est le &lt;div&gt; extérieur qui enveloppe tout.
+    // Si tu as &lt;div&gt; et &lt;p&gt; côte à côte sans parent commun → erreur.</span>
+
+    <span class="tag">&lt;div</span> <span class="prop">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+      <span class="cmt">{/* className remplace "class" du HTML.
+           En JavaScript, "class" est un mot réservé (pour les
+           classes ES6), donc JSX utilise className à la place.
+           Dans le navigateur, ça redevient class="carte" */}</span>
+
+      <span class="tag">&lt;h2&gt;</span>React Avancé<span class="tag">&lt;/h2&gt;</span>
+
+      <span class="tag">&lt;p&gt;</span>Apprenez les patterns avancés de React.<span class="tag">&lt;/p&gt;</span>
+
+      <span class="cmt">{/* Les accolades {} dans le JSX permettent d'insérer
+           du JavaScript. Ici on calcule directement */}</span>
+      <span class="tag">&lt;p&gt;</span>Places restantes : {<span class="num">30</span> <span class="op">-</span> <span class="num">22</span>}<span class="tag">&lt;/p&gt;</span>
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="cmt">// ──────────────────────────────────────────────────────────────
+// "export default" : rend ce composant disponible pour d'autres
+//                    fichiers. Sans ce mot-clé, personne ne peut
+//                    utiliser Carte en dehors de ce fichier.
+// ──────────────────────────────────────────────────────────────</span>
+<span class="kw">export default</span> Carte
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>App.jsx</em> — utiliser le composant</span>
+    </div>
+<pre class="code">
+<span class="cmt">// "import" : on importe le composant Carte depuis le fichier Carte.jsx.
+// Le chemin commence par "./" qui signifie "dans le même dossier".
+// Pas besoin d'écrire ".jsx", Vite le trouve tout seul.</span>
+<span class="kw">import</span> Carte <span class="kw">from</span> <span class="str">'./Carte'</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* On utilise Carte exactement comme une balise HTML.
+           Les balises auto-fermantes (/&gt;) sont valides en JSX. */}</span>
+      <span class="tag">&lt;Carte /&gt;</span>
+      <span class="tag">&lt;Carte /&gt;</span>  <span class="cmt">{/* Le même composant réutilisé — c'est tout l'intérêt */}</span>
+      <span class="tag">&lt;Carte /&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> App
+</pre>
+  </div>
+
+  <div class="alerte a-info">
+    <span class="a-ico">💡</span>
+    <div><strong>JSX n'est pas du HTML.</strong> Le navigateur ne comprend pas le JSX. Vite (ou Webpack) le convertit en JavaScript pur avant d'envoyer le code au navigateur. <code>&lt;h2&gt;Bonjour&lt;/h2&gt;</code> devient <code>React.createElement('h2', null, 'Bonjour')</code>. Le JSX est juste une syntaxe plus lisible.</div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  02 — PROPS                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c02">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2>Props — Passer des données</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Le problème :</strong> Notre composant <code>&lt;Carte /&gt;</code> affiche toujours le même texte "React Avancé". C'est inutile — une carte identique pour 50 ateliers différents n'a aucun sens.</p>
+    <p><strong>La solution : les props.</strong> Les props (propriétés) sont les <em>arguments d'un composant</em>. Exactement comme une fonction JavaScript reçoit des paramètres, un composant React reçoit des props.</p>
+    <p>Règle absolue : les props sont <em>en lecture seule</em>. L'enfant ne peut pas les modifier. Les données coulent toujours du parent vers l'enfant — jamais l'inverse. C'est ce qu'on appelle le <strong>flux unidirectionnel</strong>.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  PARENT envoie des données vers les ENFANTS via les props :
+
+  &lt;Carte titre="React Avancé" inscrits={28} actif={true} /&gt;
+           │                   │              │
+           │                   │              └─ boolean : accolades obligatoires
+           │                   └─ nombre : accolades obligatoires
+           └─ string : guillemets suffisent (ou accolades, les deux marchent)
+
+  DANS LE COMPOSANT ENFANT :
+  ┌─────────────────────────────────────────────────────────┐
+  │  function Carte(props) {                                │
+  │  //                 ↑                                   │
+  │  //  "props" est un objet qui contient tout :           │
+  │  //  props.titre   → "React Avancé"                     │
+  │  //  props.inscrits → 28                                │
+  │  //  props.actif   → true                               │
+  │  }                                                      │
+  └─────────────────────────────────────────────────────────┘
+
+  VERSION AMÉLIORÉE — destructuration :
+  ┌─────────────────────────────────────────────────────────┐
+  │  function Carte({ titre, inscrits, actif }) {           │
+  │  //              ↑ on extrait directement les props     │
+  │  //              ↑ plus besoin d'écrire props.titre     │
+  │  }                                                      │
+  └─────────────────────────────────────────────────────────┘
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>Carte.jsx</em> — composant qui reçoit des props</span>
+    </div>
+<pre class="code">
+<span class="cmt">// ────────────────────────────────────────────────────────────────
+// On déclare les props attendues entre accolades dans les paramètres.
+// C'est de la "destructuration" JavaScript :
+//   function Carte({ titre, inscrits })
+// est équivalent à :
+//   function Carte(props) {
+//     const titre    = props.titre
+//     const inscrits = props.inscrits
+//   }
+// La destructuration est juste plus courte et plus lisible.
+// ────────────────────────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">Carte</span>({ titre, description, inscrits, maxPlaces, children }) {
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div</span> <span class="prop">className</span>=<span class="str">"carte"</span><span class="tag">&gt;</span>
+
+      <span class="cmt">{/* Les accolades {} dans le JSX = "ici c'est du JavaScript".
+           On affiche la valeur de la variable "titre". */}</span>
+      <span class="tag">&lt;h2&gt;</span>{ titre }<span class="tag">&lt;/h2&gt;</span>
+
+      <span class="tag">&lt;p&gt;</span>{ description }<span class="tag">&lt;/p&gt;</span>
+
+      <span class="cmt">{/* On peut faire du JavaScript dans les accolades :
+           calcul, comparaison, appel de méthode... */}</span>
+      <span class="tag">&lt;p&gt;</span>
+        { inscrits } / { maxPlaces } inscrits
+        ({ Math.<span class="fn">round</span>((inscrits / maxPlaces) <span class="op">*</span> <span class="num">100</span>) }%)
+      <span class="tag">&lt;/p&gt;</span>
+
+      <span class="cmt">{/* "children" est une prop spéciale.
+           Elle contient tout ce qu'on met ENTRE les balises
+           du composant : &lt;Carte&gt;...ici...&lt;/Carte&gt;
+           Si rien n'est passé, children vaut undefined. */}</span>
+      <span class="tag">&lt;div&gt;</span>{ children }<span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> Carte
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>App.jsx</em> — passer des props au composant</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> Carte <span class="kw">from</span> <span class="str">'./Carte'</span>
+
+<span class="kw">function</span> <span class="fn">App</span>() {
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+
+      <span class="cmt">{/* On passe les props comme des attributs HTML.
+           titre="..." → string entre guillemets
+           inscrits={28} → nombre entre accolades
+           Les accolades sont obligatoires pour tout ce qui
+           n'est pas une chaîne de caractères simple. */}</span>
+      <span class="tag">&lt;Carte</span>
+        <span class="prop">titre</span>=<span class="str">"React Avancé"</span>
+        <span class="prop">description</span>=<span class="str">"Maîtrisez les hooks et patterns avancés"</span>
+        <span class="prop">inscrits</span>={<span class="num">28</span>}
+        <span class="prop">maxPlaces</span>={<span class="num">30</span>}
+      <span class="tag">&gt;</span>
+        <span class="cmt">{/* Ceci ira dans la prop "children" de Carte */}</span>
+        <span class="tag">&lt;button&gt;</span>S'inscrire<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/Carte&gt;</span>
+
+      <span class="cmt">{/* Même composant, données différentes → affichage différent */}</span>
+      <span class="tag">&lt;Carte</span>
+        <span class="prop">titre</span>=<span class="str">"TypeScript Fondamentaux"</span>
+        <span class="prop">description</span>=<span class="str">"Le typage statique pour vos projets"</span>
+        <span class="prop">inscrits</span>={<span class="num">15</span>}
+        <span class="prop">maxPlaces</span>={<span class="num">20</span>}
+      <span class="tag">/&gt;</span>
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+
+  <div class="alerte a-warn">
+    <span class="a-ico">⚠️</span>
+    <div><strong>Ne jamais modifier une prop dans l'enfant.</strong> Si tu fais <code>titre = "nouveau titre"</code> à l'intérieur de <code>Carte</code>, React ne le détectera pas et l'interface ne se mettra pas à jour. Les props sont en lecture seule. Pour des données qui changent, il faut le state (useState).</div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  03 — useState                                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c03">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2>State avec useState</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Pourquoi le state existe-t-il ?</strong><br>
+    Les props viennent du parent et ne changent pas dans l'enfant. Mais une interface web a besoin de données qui <em>changent en réponse aux actions de l'utilisateur</em> : un compteur qui monte, un formulaire qu'on remplit, une modal qui s'ouvre...</p>
+    <p><strong>useState</strong> est le hook qui permet à un composant de mémoriser une valeur <em>entre les rendus</em>. Si tu utilises une variable JavaScript normale (<code>let compteur = 0</code>), elle est réinitialisée à chaque fois que React re-affiche le composant. useState, lui, conserve la valeur.</p>
+    <p>Et surtout : quand tu modifies le state avec le setter, React <strong>re-affiche automatiquement</strong> le composant avec la nouvelle valeur. C'est le mécanisme fondamental de React.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  useState retourne un tableau de 2 éléments.
+  On les extrait par destructuration :
+
+  const  [  valeur  ,   setValeur  ]  =  useState(  0  )
+              │              │                       │
+              │              │                       └─ valeur initiale (au premier affichage)
+              │              └─ fonction pour CHANGER la valeur
+              └─ la valeur actuelle (ce qu'on affiche dans le JSX)
+
+
+  LE CYCLE COMPLET (ce qui se passe quand on clique) :
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                                                             │
+  │  1. Composant s'affiche        valeur = 0                   │
+  │           │                                                 │
+  │           ▼                                                 │
+  │  2. Utilisateur clique sur le bouton "+"                    │
+  │           │                                                 │
+  │           ▼                                                 │
+  │  3. onClick appelle  setValeur(valeur + 1)                   │
+  │           │            └─ on demande à React de             │
+  │           │               mettre valeur à 1                 │
+  │           ▼                                                 │
+  │  4. React planifie un nouveau rendu                         │
+  │           │                                                 │
+  │           ▼                                                 │
+  │  5. React appelle à nouveau la fonction du composant        │
+  │           │                                                 │
+  │           ▼                                                 │
+  │  6. Cette fois, useState(0) retourne [1, setValeur]         │
+  │           │         ↑ React a mémorisé la nouvelle valeur   │
+  │           ▼                                                 │
+  │  7. Le JSX s'affiche avec valeur = 1  ✓                      │
+  │           │                                                 │
+  │           └────────────── retour à l'étape 1               │
+  └─────────────────────────────────────────────────────────────┘
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>Compteur.jsx</em> — useState avec un nombre</span>
+    </div>
+<pre class="code">
+<span class="cmt">// useState vient de la librairie React.
+// On l'importe avec les accolades (import nommé).
+// La librairie React exporte beaucoup de choses : useState,
+// useEffect, useRef, etc. On n'importe que ce dont on a besoin.</span>
+<span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">Compteur</span>() {
+
+  <span class="cmt">// ────────────────────────────────────────────────────────────
+  // DÉCLARATION DU STATE :
+  //
+  // useState(0)   → on initialise le state à 0
+  // compte        → c'est la valeur actuelle (0 au départ)
+  // setCompte     → c'est la fonction pour changer "compte"
+  //
+  // Convention : le setter s'appelle "set" + nomDuState en camelCase.
+  // Ce n'est pas obligatoire, mais c'est la convention universelle.
+  // ────────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> [compte, setCompte] = <span class="fn">useState</span>(<span class="num">0</span>)
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+
+      <span class="cmt">{/* On affiche la valeur du state dans le JSX.
+           À chaque changement de "compte", ce texte se met à jour. */}</span>
+      <span class="tag">&lt;p&gt;</span>Valeur actuelle : { compte }<span class="tag">&lt;/p&gt;</span>
+
+      <span class="cmt">{/* onClick reçoit une fonction fléchée.
+           Cette fonction appelle setCompte avec la nouvelle valeur.
+           On utilise "compte + 1" pour incrémenter l'actuel. */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">setCompte</span>(compte <span class="op">+</span> <span class="num">1</span>)}<span class="tag">&gt;</span>
+        + 1
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Forme alternative avec une fonction séparée.
+           Utile quand la logique est plus complexe. */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">setCompte</span>(compte <span class="op">-</span> <span class="num">1</span>)}<span class="tag">&gt;</span>
+        - 1
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* setCompte(0) remet le state à 0, peu importe sa valeur */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">setCompte</span>(<span class="num">0</span>)}<span class="tag">&gt;</span>
+        Réinitialiser
+      <span class="tag">&lt;/button&gt;</span>
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> Compteur
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>FormulaireSimple.jsx</em> — useState avec un objet</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">FormulaireSimple</span>() {
+
+  <span class="cmt">// On peut stocker n'importe quel type de données dans le state :
+  // string, number, boolean, array, object...
+  // Ici on stocke un objet avec plusieurs champs de formulaire.
+  // C'est pratique pour garder tous les champs groupés.</span>
+  <span class="kw">const</span> [formData, setFormData] = <span class="fn">useState</span>({
+    nom:    <span class="str">''</span>,   <span class="cmt">// chaîne vide = champ vide au départ</span>
+    email:  <span class="str">''</span>,
+    niveau: <span class="str">'beginner'</span>
+  })
+
+  <span class="kw">const</span> <span class="fn">changerNom</span> = (e) => {
+    <span class="cmt">// "e" (ou "event") est l'objet événement.
+    // e.target est l'élément HTML qui a déclenché l'événement (l'input).
+    // e.target.value est la valeur tapée dans l'input.</span>
+
+    <span class="cmt">// TRÈS IMPORTANT : le spread operator "..." copie tous les
+    // champs existants de formData. Ensuite on ÉCRASE seulement
+    // le champ "nom" avec la nouvelle valeur.
+    // Sans le "...", on perdrait email et niveau !</span>
+    <span class="fn">setFormData</span>({ ...formData, nom: e.target.value })
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="prop">type</span>=<span class="str">"text"</span>
+        <span class="prop">value</span>={formData.nom}      <span class="cmt">{/* React contrôle la valeur affichée */}</span>
+        <span class="prop">onChange</span>={changerNom}     <span class="cmt">{/* On met à jour le state à chaque frappe */}</span>
+        <span class="prop">placeholder</span>=<span class="str">"Votre nom"</span>
+      <span class="tag">/&gt;</span>
+
+      <span class="cmt">{/* Affichage en temps réel — se met à jour à chaque frappe */}</span>
+      <span class="tag">&lt;p&gt;</span>Tu as tapé : { formData.nom }<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+
+  <div class="alerte a-err">
+    <span class="a-ico">🚫</span>
+    <div><strong>Erreur fatale — ne JAMAIS modifier le state directement :</strong><br>
+    <code>compte = compte + 1</code> → ne fonctionne pas, React ne le détecte pas.<br>
+    <code>formData.nom = "Jean"</code> → ne fonctionne pas.<br>
+    <strong>Toujours</strong> utiliser la fonction setter : <code>setCompte(compte + 1)</code>, <code>setFormData({...})</code>.</div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  04 — useEffect                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c04">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2>useEffect — Effets de bord</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>C'est quoi un "effet de bord" ?</strong><br>
+    Lors d'un rendu, React fait UNE chose : appeler ta fonction composant et afficher ce qu'elle retourne. Tout le reste — appeler une API, modifier le titre de la page, créer un timer, écouter un événement — est considéré comme un <em>"effet de bord"</em> car ça dépasse le simple affichage.</p>
+    <p><strong>useEffect</strong> te donne un endroit sûr pour exécuter ces actions, <em>après que React a terminé d'afficher</em> le composant. Ça évite de perturber le rendu.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  SYNTAXE :
+  useEffect(  fonction  ,  [tableau de dépendances]  )
+                  │                    │
+                  │                    └── QUAND ré-exécuter la fonction ?
+                  └── QUOI faire (ton effet)
+
+
+  LES 3 CAS DU TABLEAU DE DÉPENDANCES :
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │                                                              │
+  │  useEffect(() => { ... })                                    │
+  │  └─ Pas de tableau → se déclenche après CHAQUE rendu.       │
+  │     Presque jamais utile. Attention aux boucles infinies !  │
+  │                                                              │
+  │  useEffect(() => { ... }, [])                                │
+  │  └─ Tableau vide → se déclenche UNE SEULE FOIS              │
+  │     au montage (quand le composant apparaît pour            │
+  │     la première fois). Parfait pour les appels API.         │
+  │                                                              │
+  │  useEffect(() => { ... }, [userId, filtre])                  │
+  │  └─ Tableau avec valeurs → se déclenche au montage          │
+  │     ET à chaque fois que userId OU filtre change.           │
+  │                                                              │
+  └──────────────────────────────────────────────────────────────┘
+
+
+  CYCLE DE VIE :
+
+  Composant            useEffect(fn, [])     useEffect(fn, [val])
+  s'affiche    ──────→  exécute fn           exécute fn
+  val change   ──────→  (rien)               exécute fn
+  composant    ──────→  cleanup              cleanup
+  disparaît
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>ListeAteliers.jsx</em> — fetch API au montage</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">ListeAteliers</span>() {
+
+  <span class="cmt">// 3 states pour gérer les 3 états d'un appel API :
+  // - on attend      → chargement = true
+  // - succès         → ateliers contient les données
+  // - erreur         → erreur contient le message</span>
+  <span class="kw">const</span> [ateliers,    setAteliers]    = <span class="fn">useState</span>([])
+  <span class="kw">const</span> [chargement,  setChargement]  = <span class="fn">useState</span>(<span class="val">true</span>)
+  <span class="kw">const</span> [erreur,      setErreur]      = <span class="fn">useState</span>(<span class="val">null</span>)
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────
+  // useEffect avec [] = s'exécute UNE SEULE FOIS au montage.
+  // C'est l'équivalent de "componentDidMount" en React classique.
+  // ─────────────────────────────────────────────────────────</span>
+  <span class="fn">useEffect</span>(() => {
+
+    <span class="cmt">// On ne peut pas mettre async directement sur la callback de
+    // useEffect. On déclare donc une fonction async à l'intérieur
+    // et on l'appelle immédiatement.</span>
+    <span class="kw">const</span> <span class="fn">charger</span> = <span class="kw">async</span> () => {
+      <span class="kw">try</span> {
+        <span class="cmt">// fetch() envoie une requête HTTP.
+        // await attend la réponse avant de continuer.
+        // Sans await, le code passerait à la ligne suivante
+        // avant d'avoir reçu les données → bug.</span>
+        <span class="kw">const</span> reponse = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/ateliers'</span>)
+
+        <span class="cmt">// reponse.json() lit le corps de la réponse et le convertit
+        // en objet JavaScript (le JSON texte → objet JS)</span>
+        <span class="kw">const</span> donnees = <span class="kw">await</span> reponse.<span class="fn">json</span>()
+
+        <span class="fn">setAteliers</span>(donnees)    <span class="cmt">// on stocke les données dans le state</span>
+        <span class="fn">setChargement</span>(<span class="val">false</span>)   <span class="cmt">// on arrête le spinner de chargement</span>
+
+      } <span class="kw">catch</span> (e) {
+        <span class="cmt">// Si fetch échoue (réseau coupé, serveur erreur...),
+        // on attrape l'erreur et on l'affiche à l'utilisateur.</span>
+        <span class="fn">setErreur</span>(e.message)
+        <span class="fn">setChargement</span>(<span class="val">false</span>)
+      }
+    }
+
+    <span class="fn">charger</span>() <span class="cmt">// on appelle la fonction async définie juste au-dessus</span>
+
+  }, []) <span class="cmt">// ← tableau vide : ne se déclenche qu'une fois au montage</span>
+
+
+  <span class="cmt">// ─────────────────────────────────────────────────────────
+  // On gère les 3 états AVANT le return principal.
+  // Ces "return anticipés" évitent d'imbriquer des conditions.
+  // ─────────────────────────────────────────────────────────</span>
+  <span class="kw">if</span> (chargement) <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Chargement en cours...<span class="tag">&lt;/p&gt;</span>
+  <span class="kw">if</span> (erreur)     <span class="kw">return</span> <span class="tag">&lt;p</span> <span class="prop">style</span>={{ color: <span class="str">'red'</span> }}<span class="tag">&gt;</span>Erreur : { erreur }<span class="tag">&lt;/p&gt;</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;ul&gt;</span>
+      {ateliers.<span class="fn">map</span>(atelier => (
+        <span class="tag">&lt;li</span> <span class="prop">key</span>={atelier.id}<span class="tag">&gt;</span>{atelier.titre}<span class="tag">&lt;/li&gt;</span>
+      ))}
+    <span class="tag">&lt;/ul&gt;</span>
+  )
+}
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>Minuteur.jsx</em> — cleanup (nettoyage) indispensable</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">Minuteur</span>() {
+  <span class="kw">const</span> [secondes, setSecondes] = <span class="fn">useState</span>(<span class="num">0</span>)
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="cmt">// setInterval exécute une fonction toutes les X millisecondes.
+    // 1000ms = 1 seconde.
+    // On stocke l'identifiant du timer dans "idTimer"
+    // pour pouvoir l'arrêter plus tard.</span>
+    <span class="kw">const</span> idTimer = <span class="fn">setInterval</span>(() => {
+      <span class="cmt">// Forme fonctionnelle du setter : quand la nouvelle valeur
+      // dépend de l'ancienne, on passe une fonction plutôt que
+      // la valeur directement. Ici "s" est la valeur actuelle.
+      // Ça évite les problèmes de closures stales.</span>
+      <span class="fn">setSecondes</span>(s => s <span class="op">+</span> <span class="num">1</span>)
+    }, <span class="num">1000</span>)
+
+    <span class="cmt">// ─────────────────────────────────────────────────────
+    // FONCTION DE CLEANUP (nettoyage) :
+    // useEffect peut retourner une fonction.
+    // Cette fonction est appelée automatiquement quand :
+    //   • Le composant disparaît de l'écran (démontage)
+    //   • Juste AVANT que l'effet se ré-exécute
+    //
+    // Sans ce cleanup, le timer continuerait à tourner en
+    // arrière-plan même si le composant n'est plus affiché.
+    // C'est une fuite mémoire → bug difficile à détecter.
+    // ─────────────────────────────────────────────────────</span>
+    <span class="kw">return</span> () => {
+      <span class="fn">clearInterval</span>(idTimer) <span class="cmt">// on arrête le timer proprement</span>
+    }
+
+  }, []) <span class="cmt">// [] = démarre le timer une fois au montage, cleanup au démontage</span>
+
+  <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Temps écoulé : { secondes } secondes<span class="tag">&lt;/p&gt;</span>
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  05 — ÉVÉNEMENTS                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c05">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2>Gestion des événements</h2>
+  </div>
+
+  <div class="bloc">
+    <p>Les événements sont les interactions de l'utilisateur avec l'interface : il clique, tape au clavier, survole, soumet un formulaire... React les gère via des <em>props spéciales en camelCase</em> (<code>onClick</code>, <code>onChange</code>, <code>onSubmit</code>...) auxquelles on passe une <strong>fonction</strong>.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  HTML CLASSIQUE vs REACT :
+
+  HTML :    &lt;button onclick="maFonction()"&gt;
+  React :   &lt;button onClick={maFonction}&gt;
+                        ↑         ↑
+                    camelCase  référence (pas d'appel)
+
+  RÉFÉRENCE vs APPEL — différence critique :
+
+  onClick={maFonction}    ← CORRECT : on passe la référence
+                            React l'appellera au moment du clic
+
+  onClick={maFonction()}  ← INCORRECT : on appelle la fonction
+                            immédiatement lors du rendu !
+                            (résultat : maFonction s'exécute
+                            à chaque affichage, pas au clic)
+
+  TABLEAU DES ÉVÉNEMENTS COURANTS :
+  ┌─────────────────┬────────────────────────────────────────┐
+  │ onClick         │ Clic sur un élément                    │
+  │ onChange        │ Changement dans un input/select        │
+  │ onSubmit        │ Soumission d'un &lt;form&gt;                 │
+  │ onKeyDown       │ Touche enfoncée                        │
+  │ onKeyUp         │ Touche relâchée                        │
+  │ onFocus         │ Élément gagne le focus                 │
+  │ onBlur          │ Élément perd le focus                  │
+  │ onMouseEnter    │ Souris entre dans l'élément            │
+  │ onMouseLeave    │ Souris sort de l'élément               │
+  │ onScroll        │ Scroll dans un élément                 │
+  └─────────────────┴────────────────────────────────────────┘
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>GestionEvenements.jsx</em> — tous les cas expliqués</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">'react'</span>
+
+<span class="kw">function</span> <span class="fn">GestionEvenements</span>() {
+  <span class="kw">const</span> [texte, setTexte] = <span class="fn">useState</span>(<span class="str">''</span>)
+
+  <span class="cmt">// ─── GESTIONNAIRE DÉFINI EN DEHORS DU JSX ────────────────
+  // Bonne pratique : nommer les fonctions et les sortir du JSX
+  // pour garder le JSX lisible. Nom en français avec "gerer" au début.
+  // ────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererClic</span> = () => {
+    <span class="fn">alert</span>(<span class="str">'Bouton cliqué !'</span>)
+  }
+
+  <span class="cmt">// ─── ÉVÉNEMENT AVEC OBJET EVENT ──────────────────────────
+  // "e" (ou "event") est passé automatiquement par React.
+  // Il contient des infos sur ce qui s'est passé :
+  //   e.target        → l'élément HTML déclencheur
+  //   e.target.value  → valeur actuelle de l'input
+  //   e.target.name   → attribut name de l'input
+  //   e.key           → touche appuyée (pour onKeyDown)
+  // ────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererChangement</span> = (e) => {
+    <span class="fn">setTexte</span>(e.target.value)
+  }
+
+  <span class="cmt">// ─── SOUMISSION DE FORMULAIRE ──────────────────────────
+  // TRÈS IMPORTANT : e.preventDefault() empêche le comportement
+  // par défaut du navigateur. Sans ça, la soumission d'un form
+  // RECHARGE la page entière → on perd tout le state React !
+  // ────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererSoumission</span> = (e) => {
+    e.<span class="fn">preventDefault</span>() <span class="cmt">// OBLIGATOIRE pour ne pas recharger la page</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Formulaire soumis avec :'</span>, texte)
+  }
+
+  <span class="cmt">// ─── PASSER DES ARGUMENTS SUPPLÉMENTAIRES ────────────────
+  // Si tu as besoin de passer des données en plus de l'événement,
+  // tu enveloppes dans une fonction fléchée.
+  // ────────────────────────────────────────────────────────</span>
+  <span class="kw">const</span> <span class="fn">gererClicAvecId</span> = (id, e) => {
+    e.<span class="fn">stopPropagation</span>() <span class="cmt">// empêche la propagation vers les parents</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Atelier cliqué, id :'</span>, id)
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+
+      <span class="cmt">{/* Gestionnaire externe (propre) */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={gererClic}<span class="tag">&gt;</span>
+        Cliquer
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Inline (acceptable pour du simple) */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'ok'</span>)}<span class="tag">&gt;</span>
+        Inline
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* Avec argument supplémentaire : envelopper dans une flèche */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={(e) => <span class="fn">gererClicAvecId</span>(<span class="str">'workshop-1'</span>, e)}<span class="tag">&gt;</span>
+        Atelier 1
+      <span class="tag">&lt;/button&gt;</span>
+
+      <span class="cmt">{/* onChange sur un input → e.target.value donne la valeur tapée */}</span>
+      <span class="tag">&lt;input</span>
+        <span class="prop">type</span>=<span class="str">"text"</span>
+        <span class="prop">value</span>={texte}
+        <span class="prop">onChange</span>={gererChangement}
+        <span class="prop">placeholder</span>=<span class="str">"Taper quelque chose"</span>
+      <span class="tag">/&gt;</span>
+
+      <span class="cmt">{/* onSubmit sur le form → pas sur le bouton */}</span>
+      <span class="tag">&lt;form</span> <span class="prop">onSubmit</span>={gererSoumission}<span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="prop">type</span>=<span class="str">"submit"</span><span class="tag">&gt;</span>Envoyer<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/form&gt;</span>
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  06 — CONDITIONNEL & LISTES                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c06">
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2>Rendu conditionnel &amp; Listes</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Rendu conditionnel</strong> : afficher un élément seulement si une condition est vraie. Ex : afficher un message d'erreur seulement s'il y a une erreur.</p>
+    <p><strong>Rendu de liste</strong> : transformer un tableau de données en liste d'éléments JSX. La méthode JavaScript <code>.map()</code> est la pierre angulaire de ce mécanisme.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  LES 3 SYNTAXES CONDITIONNELLES :
+
+  1. if/else — AVANT le return (pour les gros blocs)
+  ──────────────────────────────────────────────────
+  if (chargement) return &lt;Spinner /&gt;
+  if (!utilisateur) return &lt;PageConnexion /&gt;
+  return &lt;TableauDeBord /&gt;
+
+  2. Ternaire — DANS le JSX (pour alterner entre 2 éléments)
+  ──────────────────────────────────────────────────────────
+  { estConnecte
+    ? &lt;p&gt;Bienvenue !&lt;/p&gt;
+    : &lt;p&gt;Veuillez vous connecter&lt;/p&gt;
+  }
+
+  3. && (ET logique) — DANS le JSX (pour afficher OU rien)
+  ────────────────────────────────────────────────────────
+  { erreur &amp;&amp; &lt;MessageErreur texte={erreur} /&gt; }
+  ↑ Si erreur est truthy → affiche MessageErreur
+  ↑ Si erreur est null/undefined → n'affiche rien
+
+  ⚠️ PIÈGE avec && : utiliser Boolean() ou !! pour les nombres :
+  { nbItems &amp;&amp; &lt;Liste /&gt; }  → si nbItems = 0, affiche "0" dans le DOM !
+  { nbItems &gt; 0 &amp;&amp; &lt;Liste /&gt; }  → correct
+
+
+  .map() — TRANSFORMER un tableau en JSX :
+
+  const fruits = ['pomme', 'poire', 'cerise']
+                       │
+                       ▼ .map() parcourt chaque élément
+  fruits.map(fruit => &lt;li key={fruit}&gt;{fruit}&lt;/li&gt;)
+                    ↑
+                    Une fonction qui reçoit l'élément actuel
+                    et retourne du JSX
+                       │
+                       ▼ résultat : tableau de JSX
+  [ &lt;li key="pomme"&gt;pomme&lt;/li&gt;,
+    &lt;li key="poire"&gt;poire&lt;/li&gt;,
+    &lt;li key="cerise"&gt;cerise&lt;/li&gt; ]
+
+  React affiche ce tableau directement dans le DOM.
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>PageAteliers.jsx</em> — conditionnel et liste complètes</span>
+    </div>
+<pre class="code">
+<span class="kw">function</span> <span class="fn">PageAteliers</span>({ chargement, erreur, ateliers }) {
+
+  <span class="cmt">// ─── CAS 1 : SORTIE ANTICIPÉE ────────────────────────────
+  // Ces if/return avant le JSX principal évitent d'imbriquer
+  // des conditions. Le code reste plat et lisible.
+  // Dès qu'une condition est vraie, on retourne immédiatement.
+  // ────────────────────────────────────────────────────────</span>
+  <span class="kw">if</span> (chargement) {
+    <span class="kw">return</span> <span class="tag">&lt;p&gt;</span>Chargement...<span class="tag">&lt;/p&gt;</span>
+  }
+
+  <span class="kw">if</span> (erreur) {
+    <span class="kw">return</span> <span class="tag">&lt;p</span> <span class="prop">className</span>=<span class="str">"erreur"</span><span class="tag">&gt;</span>Erreur : { erreur }<span class="tag">&lt;/p&gt;</span>
+  }
+
+  <span class="cmt">// Si on arrive ici, chargement=false et erreur=null</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+
+      <span class="cmt">{/* ─── CAS 2 : TERNAIRE DANS LE JSX ─────────────────────
+           Condition ? si_vrai : si_faux
+           Utile pour afficher l'un ou l'autre selon l'état */}</span>
+      { ateliers.length <span class="op">&gt;</span> <span class="num">0</span>
+        ? <span class="tag">&lt;p&gt;</span>{ ateliers.length } atelier(s) disponible(s)<span class="tag">&lt;/p&gt;</span>
+        : <span class="tag">&lt;p&gt;</span>Aucun atelier pour le moment.<span class="tag">&lt;/p&gt;</span>
+      }
+
+      <span class="cmt">{/* ─── CAS 3 : && POUR AFFICHER OU RIEN ─────────────────
+           Si ateliers.length > 0 est VRAI → affiche le &lt;ul&gt;
+           Si c'est FAUX → n'affiche rien (pas même un nœud vide) */}</span>
+      { ateliers.length <span class="op">&gt;</span> <span class="num">0</span> <span class="op">&amp;&amp;</span>
+        <span class="tag">&lt;ul</span> <span class="prop">className</span>=<span class="str">"liste-ateliers"</span><span class="tag">&gt;</span>
+
+          <span class="cmt">{/* ─── .map() POUR RENDRE UNE LISTE ─────────────────────
+               ateliers est un tableau d'objets.
+               .map() retourne un nouveau tableau de JSX.
+               React affiche ce tableau comme une liste d'éléments.
+
+               La prop "key" EST OBLIGATOIRE dans un .map().
+               Elle doit être :
+               • unique parmi les éléments du même niveau
+               • stable (ne doit pas changer entre les rendus)
+               Utilise toujours l'id de ta donnée. JAMAIS l'index ! */}</span>
+          { ateliers.<span class="fn">map</span>((atelier) => (
+            <span class="tag">&lt;li</span> <span class="prop">key</span>={atelier.id}<span class="tag">&gt;</span>
+
+              <span class="cmt">{/* On accède aux propriétés de chaque objet atelier */}</span>
+              <span class="tag">&lt;strong&gt;</span>{ atelier.titre }<span class="tag">&lt;/strong&gt;</span>
+              <span class="tag">&lt;span&gt;</span> — { atelier.niveau }<span class="tag">&lt;/span&gt;</span>
+
+              <span class="cmt">{/* Condition dans la liste : badge seulement si complet */}</span>
+              { atelier.currentParticipants <span class="op">===</span> atelier.maxParticipants
+                <span class="op">&amp;&amp;</span> <span class="tag">&lt;span</span> <span class="prop">className</span>=<span class="str">"badge-complet"</span><span class="tag">&gt;</span>Complet<span class="tag">&lt;/span&gt;</span>
+              }
+
+            <span class="tag">&lt;/li&gt;</span>
+          )) }
+
+        <span class="tag">&lt;/ul&gt;</span>
+      }
+
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  07 — ROUTER                                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c07">
+  <div class="section-head">
+    <span class="section-num">07</span>
+    <h2>React Router v6 — Routes dans leur propre fichier</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Pourquoi un router ?</strong><br>
+    Une application React est une SPA (Single Page Application) : il y a <em>un seul fichier HTML</em>, mais plusieurs "vues" (pages). React Router intercepte les changements d'URL et affiche le bon composant sans recharger la page.</p>
+    <p><strong>Pourquoi un fichier séparé pour les routes ?</strong><br>
+    Si tu mets les routes dans <code>App.jsx</code>, ce fichier grossit rapidement et mélange deux responsabilités (layout + navigation). Le fichier <code>router.jsx</code> a une seule responsabilité : <em>définir les routes</em>. C'est une meilleure architecture.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  STRUCTURE AVEC ROUTER SÉPARÉ :
+
+  src/
+  ├── main.jsx          ← point d'entrée, importe AppRouter
+  ├── router.jsx        ← TOUTES les routes sont ici
+  ├── AppLayout.jsx     ← layout partagé (navbar + &lt;Outlet /&gt;)
+  │
+  ├── pages/
+  │   ├── Accueil.jsx
+  │   ├── Ateliers.jsx
+  │   └── DetailAtelier.jsx
+  │
+  └── composants/
+      └── Navigation.jsx
+
+
+  COMMENT createBrowserRouter FONCTIONNE :
+
+  On lui passe un tableau d'objets, chaque objet est une route.
+  La route "/" a des "children" : ce sont les sous-routes.
+  Le composant AppLayout s'affiche toujours.
+  L'enfant actif s'affiche à la place de &lt;Outlet /&gt;.
+
+  URL : /ateliers
+        │
+        ▼
+  BrowserRouter intercepte le changement d'URL
+        │
+        ▼
+  Cherche dans les routes : path="ateliers" → trouvé !
+        │
+        ▼
+  Affiche :  &lt;AppLayout&gt;
+               &lt;Navigation /&gt;        ← toujours visible
+               &lt;Outlet /&gt;            ← remplacé par &lt;Ateliers /&gt;
+             &lt;/AppLayout&gt;
+
+
+  HOOKS DU ROUTER :
+
+  useNavigate()  → fonction pour changer de page par code
+  useParams()    → lire les :paramètres de l'URL
+  useLocation()  → lire l'URL actuelle complète
+  NavLink        → lien avec classe "active" automatique
+  Outlet         → emplacement de la page enfant courante
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>router.jsx</em> — fichier dédié, toutes les routes</span>
+    </div>
+<pre class="code">
+<span class="cmt">// createBrowserRouter : crée le routeur avec une configuration d'objet.
+// C'est la méthode moderne (React Router v6.4+).
+// Elle permet aussi de faire du chargement de données (loaders),
+// mais on ne l'utilise pas ici pour rester simple.
+//
+// RouterProvider : composant React qui "fournit" le routeur
+// à toute l'application. On l'utilise dans main.jsx.</span>
+<span class="kw">import</span> { createBrowserRouter, RouterProvider } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+
+<span class="cmt">// On importe le layout partagé et toutes les pages</span>
+<span class="kw">import</span> AppLayout       <span class="kw">from</span> <span class="str">'./AppLayout'</span>
+<span class="kw">import</span> TableauDeBord   <span class="kw">from</span> <span class="str">'./pages/TableauDeBord'</span>
+<span class="kw">import</span> TousLesAteliers <span class="kw">from</span> <span class="str">'./pages/TousLesAteliers'</span>
+<span class="kw">import</span> DetailAtelier   <span class="kw">from</span> <span class="str">'./pages/DetailAtelier'</span>
+<span class="kw">import</span> MesAteliers     <span class="kw">from</span> <span class="str">'./pages/MesAteliers'</span>
+<span class="kw">import</span> EspaceFormateur <span class="kw">from</span> <span class="str">'./pages/EspaceFormateur'</span>
+
+<span class="cmt">// ────────────────────────────────────────────────────────────────
+// createBrowserRouter reçoit un tableau de configurations de routes.
+// Chaque objet représente une route.
+// ────────────────────────────────────────────────────────────────</span>
+<span class="kw">const</span> routeur = <span class="fn">createBrowserRouter</span>([
+  {
+    <span class="cmt">// path: '/' → correspond à l'URL de base (ex: http://localhost:5173/)
+    // Ce niveau est le layout partagé. Il s'affiche toujours,
+    // quelle que soit la sous-page visitée.</span>
+    path: <span class="str">'/'</span>,
+    element: <span class="tag">&lt;AppLayout /&gt;</span>,
+
+    <span class="cmt">// children : les routes enfants qui s'affichent à l'intérieur
+    // du &lt;Outlet /&gt; de AppLayout.</span>
+    children: [
+      {
+        <span class="cmt">// index: true → cette route correspond exactement à "/"
+        // sans segment supplémentaire. C'est la page d'accueil.</span>
+        index: <span class="val">true</span>,
+        element: <span class="tag">&lt;TableauDeBord /&gt;</span>
+      },
+      {
+        <span class="cmt">// path: 'ateliers' → correspond à /ateliers
+        // Pas besoin du "/" au début pour les enfants.</span>
+        path: <span class="str">'ateliers'</span>,
+        element: <span class="tag">&lt;TousLesAteliers /&gt;</span>
+      },
+      {
+        <span class="cmt">// ':id' est un paramètre dynamique.
+        // Il correspond à n'importe quelle valeur après /ateliers/
+        // Ex: /ateliers/workshop-1  →  id = "workshop-1"
+        //     /ateliers/abc123      →  id = "abc123"
+        // On récupère sa valeur avec useParams() dans le composant.</span>
+        path: <span class="str">'ateliers/:id'</span>,
+        element: <span class="tag">&lt;DetailAtelier /&gt;</span>
+      },
+      {
+        path: <span class="str">'mes-ateliers'</span>,
+        element: <span class="tag">&lt;MesAteliers /&gt;</span>
+      },
+      {
+        path: <span class="str">'espace-formateur'</span>,
+        element: <span class="tag">&lt;EspaceFormateur /&gt;</span>
+      },
+      {
+        <span class="cmt">// '*' correspond à TOUT ce qui ne matche aucune route ci-dessus.
+        // On redirige vers "/" pour éviter une page blanche.</span>
+        path: <span class="str">'*'</span>,
+        element: <span class="tag">&lt;TableauDeBord /&gt;</span>
+      }
+    ]
+  }
+])
+
+<span class="cmt">// Ce composant est ce qu'on appelle dans main.jsx.
+// RouterProvider reçoit le routeur configuré et injecte
+// le contexte du router dans toute l'application.</span>
+<span class="kw">function</span> <span class="fn">AppRouter</span>() {
+  <span class="kw">return</span> <span class="tag">&lt;RouterProvider</span> <span class="prop">router</span>={routeur} <span class="tag">/&gt;</span>
+}
+
+<span class="kw">export default</span> AppRouter
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>AppLayout.jsx</em> — layout avec navbar persistante</span>
+    </div>
+<pre class="code">
+<span class="cmt">// Outlet est le composant-clé : c'est le "trou" dans le layout
+// où la page active sera insérée par le router.</span>
+<span class="kw">import</span> { Outlet } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+<span class="kw">import</span> Navigation <span class="kw">from</span> <span class="str">'./composants/Navigation'</span>
+
+<span class="kw">function</span> <span class="fn">AppLayout</span>() {
+  <span class="kw">return</span> (
+    <span class="cmt">// Fragment &lt;&gt;&lt;/&gt; : permet de retourner plusieurs éléments
+    // sans ajouter un &lt;div&gt; inutile dans le DOM.</span>
+    <span class="tag">&lt;&gt;</span>
+      <span class="cmt">{/* La navbar s'affiche sur TOUTES les pages.
+           Elle ne disparaît jamais au changement de route. */}</span>
+      <span class="tag">&lt;Navigation /&gt;</span>
+
+      <span class="cmt">{/* Outlet est remplacé par le composant de la route active.
+           Si on est sur /ateliers → Outlet = &lt;TousLesAteliers /&gt;
+           Si on est sur /        → Outlet = &lt;TableauDeBord /&gt;
+           La navbar reste, seul le contenu change. */}</span>
+      <span class="tag">&lt;main&gt;</span>
+        <span class="tag">&lt;Outlet /&gt;</span>
+      <span class="tag">&lt;/main&gt;</span>
+    <span class="tag">&lt;/&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> AppLayout
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>main.jsx</em> — point d'entrée simplifié</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { StrictMode }       <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> { createRoot }      <span class="kw">from</span> <span class="str">'react-dom/client'</span>
+<span class="kw">import</span> { FournisseurSkillHub } <span class="kw">from</span> <span class="str">'./contextes/ContexteSkillHub'</span>
+<span class="kw">import</span> AppRouter           <span class="kw">from</span> <span class="str">'./router'</span>
+<span class="kw">import</span> <span class="str">'./styles/global.css'</span>
+
+<span class="cmt">// document.getElementById('root') trouve le &lt;div id="root"&gt;
+// dans index.html. C'est le point d'ancrage de React dans la page HTML.
+//
+// createRoot() dit à React : "prends ce nœud DOM, gère-le toi-même".
+//
+// .render() insère le composant React dans ce nœud.</span>
+<span class="fn">createRoot</span>(document.<span class="fn">getElementById</span>(<span class="str">'root'</span>)).<span class="fn">render</span>(
+  <span class="tag">&lt;StrictMode&gt;</span>
+    <span class="cmt">{/* StrictMode : active des vérifications supplémentaires en
+         développement (double-appel des effets, warnings...).
+         N'a aucun effet en production. */}</span>
+
+    <span class="tag">&lt;FournisseurSkillHub&gt;</span>
+      <span class="cmt">{/* Le fournisseur de contexte enveloppe AppRouter.
+           Ainsi, TOUTES les pages ont accès au contexte. */}</span>
+      <span class="tag">&lt;AppRouter /&gt;</span>
+    <span class="tag">&lt;/FournisseurSkillHub&gt;</span>
+
+  <span class="tag">&lt;/StrictMode&gt;</span>
+)
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>Navigation.jsx</em> — liens avec NavLink</span>
+    </div>
+<pre class="code">
+<span class="cmt">// NavLink est comme &lt;a&gt; ou &lt;Link&gt; mais il ajoute automatiquement
+// une classe CSS "active" quand le lien correspond à l'URL actuelle.
+// Parfait pour la navigation où on veut surligner la page en cours.</span>
+<span class="kw">import</span> { NavLink } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+
+<span class="kw">function</span> <span class="fn">Navigation</span>() {
+
+  <span class="cmt">// NavLink peut recevoir une fonction pour className.
+  // Cette fonction reçoit { isActive } : true si le lien
+  // correspond à l'URL actuelle.
+  // On retourne la liste de classes CSS à appliquer.</span>
+  <span class="kw">const</span> <span class="fn">classeNavLink</span> = ({ isActive }) =>
+    isActive ? <span class="str">'nav-lien nav-lien--actif'</span> : <span class="str">'nav-lien'</span>
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;nav</span> <span class="prop">className</span>=<span class="str">"navbar"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;span</span> <span class="prop">className</span>=<span class="str">"logo"</span><span class="tag">&gt;</span>SkillHub<span class="tag">&lt;/span&gt;</span>
+
+      <span class="tag">&lt;div</span> <span class="prop">className</span>=<span class="str">"nav-liens"</span><span class="tag">&gt;</span>
+
+        <span class="cmt">{/* "end" sur le lien "/" est important !
+             Sans "end", "/" matcherait TOUTES les URLs
+             (car toutes commencent par "/").
+             "end" force la correspondance exacte. */}</span>
+        <span class="tag">&lt;NavLink</span> <span class="prop">to</span>=<span class="str">"/"</span> <span class="prop">end</span> <span class="prop">className</span>={classeNavLink}<span class="tag">&gt;</span>
+          Accueil
+        <span class="tag">&lt;/NavLink&gt;</span>
+
+        <span class="tag">&lt;NavLink</span> <span class="prop">to</span>=<span class="str">"/ateliers"</span> <span class="prop">className</span>={classeNavLink}<span class="tag">&gt;</span>
+          Ateliers
+        <span class="tag">&lt;/NavLink&gt;</span>
+
+        <span class="tag">&lt;NavLink</span> <span class="prop">to</span>=<span class="str">"/mes-ateliers"</span> <span class="prop">className</span>={classeNavLink}<span class="tag">&gt;</span>
+          Mes Ateliers
+        <span class="tag">&lt;/NavLink&gt;</span>
+
+        <span class="tag">&lt;NavLink</span> <span class="prop">to</span>=<span class="str">"/espace-formateur"</span> <span class="prop">className</span>={classeNavLink}<span class="tag">&gt;</span>
+          Formateur
+        <span class="tag">&lt;/NavLink&gt;</span>
+
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> Navigation
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>DetailAtelier.jsx</em> — useParams et useNavigate</span>
+    </div>
+<pre class="code">
+<span class="cmt">// useParams : hook pour lire les paramètres dynamiques de l'URL.
+//             Si la route est "ateliers/:id" et l'URL est "/ateliers/workshop-3",
+//             useParams() retourne l'objet { id: "workshop-3" }.
+//
+// useNavigate : hook qui retourne une fonction pour naviguer par code.
+//              Utile pour rediriger après une action (ex: soumission de form).</span>
+<span class="kw">import</span> { useParams, useNavigate } <span class="kw">from</span> <span class="str">'react-router-dom'</span>
+<span class="kw">import</span> { utiliserSkillHub } <span class="kw">from</span> <span class="str">'../contextes/ContexteSkillHub'</span>
+
+<span class="kw">function</span> <span class="fn">DetailAtelier</span>() {
+
+  <span class="cmt">// On destructure { id } depuis useParams().
+  // "id" correspond au ":id" défini dans la route.
+  // Si la route était "/:categorie/:id", on aurait { categorie, id }.</span>
+  <span class="kw">const</span> { id } = <span class="fn">useParams</span>()
+
+  <span class="cmt">// useNavigate retourne une fonction "naviguer".
+  // On peut lui passer :
+  //   • un chemin string : naviguer('/ateliers')
+  //   • un nombre :        naviguer(-1) = page précédente
+  //                        naviguer(1)  = page suivante (si disponible)</span>
+  <span class="kw">const</span> naviguer = <span class="fn">useNavigate</span>()
+
+  <span class="cmt">// On cherche l'atelier correspondant à l'id dans notre contexte</span>
+  <span class="kw">const</span> { ateliers, sInscrire, seDesinscrire } = <span class="fn">utiliserSkillHub</span>()
+  <span class="kw">const</span> atelier = ateliers.<span class="fn">find</span>(a => a.id <span class="op">===</span> id)
+
+  <span class="cmt">// Sortie anticipée si l'atelier n'existe pas</span>
+  <span class="kw">if</span> (!atelier) {
+    <span class="kw">return</span> (
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Atelier introuvable.<span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">naviguer</span>(<span class="str">'/ateliers'</span>)}<span class="tag">&gt;</span>
+          Retour aux ateliers
+        <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    )
+  }
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="cmt">{/* naviguer(-1) = équivalent du bouton "retour" du navigateur */}</span>
+      <span class="tag">&lt;button</span> <span class="prop">onClick</span>={() => <span class="fn">naviguer</span>(<span class="op">-</span><span class="num">1</span>)}<span class="tag">&gt;</span>← Retour<span class="tag">&lt;/button&gt;</span>
+
+      <span class="tag">&lt;h1&gt;</span>{ atelier.titre }<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>{ atelier.description }<span class="tag">&lt;/p&gt;</span>
+
+      <span class="tag">&lt;button</span>
+        <span class="prop">onClick</span>={() => atelier.estInscrit
+          ? <span class="fn">seDesinscrire</span>(atelier.id)
+          : <span class="fn">sInscrire</span>(atelier.id)
+        }
+      <span class="tag">&gt;</span>
+        { atelier.estInscrit ? <span class="str">'Se désinscrire'</span> : <span class="str">"S'inscrire"</span> }
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="kw">export default</span> DetailAtelier
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  08 — CONTEXT API                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="section" id="c08">
+  <div class="section-head">
+    <span class="section-num">08</span>
+    <h2>Context API</h2>
+  </div>
+
+  <div class="bloc">
+    <p><strong>Le problème du prop drilling :</strong><br>
+    Tu as l'utilisateur connecté dans ton composant racine. Un composant <code>Avatar</code> au fond de l'arbre en a besoin. Sans Context, tu dois passer l'utilisateur en prop à chaque niveau intermédiaire, même si ces niveaux n'en ont pas besoin. C'est pénible et fragile.</p>
+    <p><strong>La solution Context :</strong><br>
+    Le contexte crée une "télécabine" qui transporte les données directement du fournisseur (<code>Provider</code>) jusqu'aux consommateurs (<code>useContext</code>), sans passer par les intermédiaires.</p>
+  </div>
+
+  <div class="schema">
+<pre>
+  SANS CONTEXT (prop drilling) :         AVEC CONTEXT :
+
+  App (a utilisateur)                    App
+   └─ Page (reçoit utilisateur)    ┌──── Provider (fournit utilisateur)
+       └─ Section (reçoit utilis.) │      │
+           └─ Carte (reçoit utilis)│    Page  Section  Carte  Avatar
+               └─ Avatar           │                           │
+                  UTILISE enfin !  │                    useContext()
+                                   │                    ACCÈS DIRECT ↑
+                                   └─ la "télécabine"
+
+
+  LES 3 ÉTAPES :
+
+  1. createContext()   → crée la "boîte" de contexte
+  2. Provider          → "remplit" la boîte et l'injecte dans l'arbre
+  3. useContext()       → n'importe quel enfant lit la boîte
+</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="fname"><em>contextes/ContexteSkillHub.jsx</em> — créer le contexte</span>
+    </div>
+<pre class="code">
+<span class="kw">import</span> { createContext, useContext, useState } <span class="kw">from</span> <span class="str">'react'</span>
+<span class="kw">import</span> { mockAteliers, mockUtilisateur }        <span class="kw">from</span> <span class="str">'../données/mockData'</span>
+
+<span class="cmt">// ─── ÉTAPE 1 : createContext ──────────────────────────────────
+// createContext() crée un objet contexte.
+// On lui passe null comme valeur par défaut (quand on est
+// en dehors du Provider, ce qui ne devrait pas arriver).
+// On stocke ce contexte dans une variable avec une majuscule
+// car c'est une "classe" de contexte React. ─────────────────────</span>
+<span class="kw">const</span> ContexteSkillHub = <span class="fn">createContext</span>(<span class="val">null</span>)
+
+<span class="cmt">// ─── ÉTAPE 2 : FournisseurSkillHub (le Provider) ─────────────
+// Ce composant enveloppe toute l'app (dans main.jsx).
+// Il contient les états globaux et les fonctions pour les modifier.
+// Tout ce qu'on met dans "value" est accessible partout dans l'app.
+// ────────────────────────────────────────────────────────────────</span>
+<span class="kw">export function</span> <span class="fn">FournisseurSkillHub</span>({ children }) {
+
+  <span class="cmt">// Le state est ici, dans le Provider.
+  // Quand il change, tous les composants consommateurs re-rendent.</span>
+  <span class="kw">const</span> [ateliers,    setAteliers]    = <span class="fn">useState</span>(mockAteliers)
+  <span class="kw">const</span> [utilisateur, setUtilisateur] = <span class="fn">useState</span>(mockUtilisateur)
+
+  <span class="cmt">// Fonction pour s'inscrire à un atelier.
+  // Elle met à jour DEUX states en même temps :
+  //   1. L'atelier : on incrémente currentParticipants et on marque estInscrit
+  //   2. L'utilisateur : on ajoute l'id de l'atelier à sa liste</span>
+  <span class="kw">const</span> <span class="fn">sInscrire</span> = (id) => {
+    <span class="cmt">// .map() pour mettre à jour un élément dans le tableau
+    // sans modifier le tableau original (immutabilité !).
+    // Pour chaque atelier, si son id correspond → on le modifie.
+    // Sinon → on le retourne tel quel.</span>
+    <span class="fn">setAteliers</span>(precedents =>
+      precedents.<span class="fn">map</span>(a =>
+        a.id <span class="op">===</span> id
+          ? { ...a, estInscrit: <span class="val">true</span>, currentParticipants: a.currentParticipants <span class="op">+</span> <span class="num">1</span> }
+          : a
+      )
+    )
+    <span class="fn">setUtilisateur</span>(precedent => ({
+      ...precedent,
+      ateliersInscrits: [...precedent.ateliersInscrits, id]
+    }))
+  }
+
+  <span class="kw">const</span> <span class="fn">seDesinscrire</span> = (id) => {
+    <span class="fn">setAteliers</span>(precedents =>
+      precedents.<span class="fn">map</span>(a =>
+        a.id <span class="op">===</span> id
+          ? { ...a, estInscrit: <span class="val">false</span>, currentParticipants: a.currentParticipants <span class="op">-</span> <span class="num">1</span> }
+          : a
+      )
+    )
+    <span class="fn">setUtilisateur</span>(precedent => ({
+      ...precedent,
+      <span class="cmt">// .filter() retourne un nouveau tableau sans l'élément avec cet id</span>
+      ateliersInscrits: precedent.ateliersInscrits.<span class="fn">filter</span>(aid => aid <span class="op">!==</span> id)
+    }))
+  }
+
+  <span class="kw">return</span> (
+    <span class="cmt">// Provider.value = les données et fonctions qu'on expose.
+    // Tous les composants enfants pourront y accéder.
+    // L'objet dans value doit être stable pour éviter des
+    // re-rendus inutiles (sujet avancé, pas critique ici).</span>
+    <span class="tag">&lt;ContexteSkillHub.Provider</span>
+      <span class="prop">value</span>={{ ateliers, utilisateur, sInscrire, seDesinscrire }}
+    <span class="tag">&gt;</span>
+      { children }
+    <span class="tag">&lt;/ContexteSkillHub.Provider&gt;</span>
+  )
+}
+
+<span class="cmt">// ─── ÉTAPE 3 : hook personnalisé pour consommer le contexte ──
+// On crée une fonction utiliserSkillHub() qui encapsule useContext.
+// Avantages :
+//   • Syntaxe plus courte dans les composants
+//   • Vérification si on est bien dans le Provider (throw utile)
+//   • Un seul import à faire dans chaque composant consommateur
+// ────────────────────────────────────────────────────────────────</span>
+<span class="kw">export function</span> <span class="fn">utiliserSkillHub</span>() {
+  <span class="kw">const</span> contexte = <span class="fn">useContext</span>(ContexteSkillHub)
+
+  <span class="cmt">// Sécurité : si utiliserSkillHub est appelé hors du Provider,
+  // on lève une erreur claire plutôt qu'un bug mystérieux.</span>
+  <span class="kw">if</span> (!contexte) {
+    <span class="kw">throw new</span> Error(<span class="str">'utiliserSkillHub doit être appelé dans FournisseurSkillHub'</span>)
+  }
+
+  <span class="kw">return</span> contexte
+}
+</pre>
+  </div>
+</section>
+
+<hr class="sep" />
+</div></body></html>
