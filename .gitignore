@@ -1,0 +1,25 @@
+# Dépendances Node (jamais sur Git, trop lourd)
+node_modules/
+*/node_modules/
+
+# Dossiers de build générés par Vite
+dist/
+*/dist/
+
+# Fichiers de cache
+.cache/
+.parcel-cache/
+*.local
+
+# Variables d'environnement (secrets, mots de passe)
+.env
+.env.local
+.env.*.local
+
+# Fichiers OS (ne pollue pas le repo)
+.DS_Store          # macOS
+Thumbs.db          # Windows
+
+# Éditeur
+.vscode/settings.json
+*.swp
