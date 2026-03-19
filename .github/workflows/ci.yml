@@ -1,0 +1,68 @@
+# ═══════════════════════════════════════════════════════════════
+# PIPELINE CI — Vérification des Pull Requests
+# ═══════════════════════════════════════════════════════════════
+#
+# Ce pipeline se déclenche sur chaque Pull Request vers main.
+# Il vérifie que :
+#   1. Les dépendances s'installent correctement
+#   2. Les deux projets buildent sans erreur
+#   3. TypeScript ne lève pas d'erreur de types (TSX)
+#
+# Si ce pipeline échoue → la PR est bloquée (protection de branche).
+# C'est la sécurité qui empêche de merger du code cassé.
+# ═══════════════════════════════════════════════════════════════
+
+name: CI — Vérification Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main        # déclenche sur toute PR vers main
+      - develop     # et sur toute PR vers develop (Git Flow)
+
+jobs:
+
+  # ── VÉRIFICATION JSX ──────────────────────────────────────
+  verifier-jsx:
+    name: Vérifier Build JSX
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: skillhub-jsx/package-lock.json
+
+      - name: Installer
+        run: npm ci --prefix skillhub-jsx
+
+      - name: Vérifier le build
+        run: npm run build --prefix skillhub-jsx
+
+  # ── VÉRIFICATION TSX ──────────────────────────────────────
+  verifier-tsx:
+    name: Vérifier Build TSX + TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: skillhub-tsx/package-lock.json
+
+      - name: Installer
+        run: npm ci --prefix skillhub-tsx
+
+      # Vérifie les types TypeScript sans générer de fichiers
+      # Si une interface ne correspond pas → erreur → PR bloquée
+      - name: Vérifier les types TypeScript
+        run: npx tsc --noEmit --project skillhub-tsx/tsconfig.json
+
+      - name: Vérifier le build
+        run: npm run build --prefix skillhub-tsx
